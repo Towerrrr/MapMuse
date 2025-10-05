@@ -1,23 +1,5 @@
 <template>
   <div class="keyboard-container">
-    <!-- 鼠标部分 -->
-    <div class="mouse-section">
-      <div class="mouse">
-        <div class="mouse-buttons">
-          <button class="mouse-btn left-btn">
-            <span class="btn-label">L</span>
-          </button>
-          <div class="mouse-wheel">
-            <div class="wheel-scroll"></div>
-          </div>
-          <button class="mouse-btn right-btn">
-            <span class="btn-label">R</span>
-          </button>
-        </div>
-        <div class="mouse-body"></div>
-      </div>
-    </div>
-
     <div class="keyboard">
       <!-- 第一行 -->
       <div class="keyboard-row">
@@ -88,6 +70,24 @@
         <button class="key key-ctrl">Ctrl</button>
       </div>
     </div>
+
+    <!-- 鼠标部分 -->
+    <div class="mouse-section">
+      <div class="mouse">
+        <div class="mouse-buttons">
+          <button class="mouse-btn left-btn">
+            <span class="btn-label">L</span>
+          </button>
+          <div class="mouse-wheel">
+            <div class="wheel-scroll"></div>
+          </div>
+          <button class="mouse-btn right-btn">
+            <span class="btn-label">R</span>
+          </button>
+        </div>
+        <div class="mouse-body"></div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -153,7 +153,7 @@ export default {
 <style scoped>
 .keyboard-container {
   display: flex;
-  flex-direction: column;
+  flex-direction: direction;
   justify-content: center;
   align-items: center;
   background-color: #f5f5f5;
