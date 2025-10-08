@@ -1,73 +1,128 @@
 <template>
   <div class="keyboard-container">
     <div class="keyboard">
-      <!-- 第一行 -->
-      <div class="keyboard-row">
-        <button class="key" v-for="key in row1" :key="key.main">
-          <span class="key-symbol">{{ key.symbol }}</span>
-          <span class="key-main">{{ key.main }}</span>
-        </button>
-        <button class="key key-backspace">Backspace</button>
+      <div class="keyboard-left">
+        <!-- 功能键区域 -->
+        <div class="keyboard-row function-keys">
+          <button class="key">Esc</button>
+          <div class="keyboard-row">
+            <button class="key" v-for="key in functionKeys1" :key="key">
+              {{ key }}
+            </button>
+          </div>
+          <div class="keyboard-row">
+            <button class="key" v-for="key in functionKeys2" :key="key">
+              {{ key }}
+            </button>
+          </div>
+          <div class="keyboard-row">
+            <button class="key" v-for="key in functionKeys3" :key="key">
+              {{ key }}
+            </button>
+          </div>
+        </div>
+        <!-- 第一行 -->
+        <div class="keyboard-row">
+          <button class="key" v-for="key in row1" :key="key.main">
+            <span class="key-symbol">{{ key.symbol }}</span>
+            <span class="key-main">{{ key.main }}</span>
+          </button>
+          <button class="key key-backspace">Backspace</button>
+        </div>
+
+        <!-- 第二行 -->
+        <div class="keyboard-row">
+          <button class="key key-tab">Tab</button>
+          <button class="key" v-for="key in row2" :key="key.main">
+            <span class="key-main">{{ key.main }}</span>
+          </button>
+          <button class="key">
+            <span class="key-main">|</span>
+            <span class="key-symbol">\</span>
+          </button>
+        </div>
+
+        <!-- 第三行 -->
+        <div class="keyboard-row">
+          <button class="key key-caps">Caps Lock</button>
+          <button class="key" v-for="key in row3" :key="key.main">
+            <span class="key-main">{{ key.main }}</span>
+            <span v-if="key.dot" class="key-dot">•</span>
+          </button>
+          <button class="key">
+            <span class="key-main">:</span>
+            <span class="key-symbol">;</span>
+          </button>
+          <button class="key">
+            <span class="key-main">"</span>
+            <span class="key-symbol">'</span>
+          </button>
+          <button class="key key-enter">Enter</button>
+        </div>
+
+        <!-- 第四行 -->
+        <div class="keyboard-row">
+          <button class="key key-shift">Shift</button>
+          <button class="key" v-for="key in row4" :key="key.main">
+            <span class="key-main">{{ key.main }}</span>
+          </button>
+          <button class="key">
+            <span class="key-main"><</span>
+            <span class="key-symbol">,</span>
+          </button>
+          <button class="key">
+            <span class="key-main">></span>
+            <span class="key-symbol">.</span>
+          </button>
+          <button class="key">
+            <span class="key-main">?</span>
+            <span class="key-symbol">/</span>
+          </button>
+          <button class="key key-shift">Shift</button>
+        </div>
+
+        <!-- 第五行 -->
+        <div class="keyboard-row">
+          <button class="key key-ctrl">Ctrl</button>
+          <button class="key key-alt">Alt</button>
+          <button class="key key-space"></button>
+          <button class="key key-alt">Alt</button>
+          <button class="key key-ctrl">Ctrl</button>
+        </div>
       </div>
 
-      <!-- 第二行 -->
-      <div class="keyboard-row">
-        <button class="key key-tab">Tab</button>
-        <button class="key" v-for="key in row2" :key="key.main">
-          <span class="key-main">{{ key.main }}</span>
-        </button>
-        <button class="key">
-          <span class="key-main">|</span>
-          <span class="key-symbol">\</span>
-        </button>
-      </div>
+      <!-- 键盘右侧区域 -->
+      <div class="keyboard-right">
+        <div class="right-row">
+          <button class="key" v-for="key in systemKeys" :key="key">
+            {{ key }}
+          </button>
+        </div>
+        <!-- 导航键区域 -->
+        <div class="right-keys">
+            <div class="right-row">
+              <button class="key" v-for="key in navKeys1" :key="key">
+                {{ key }}
+              </button>
+            </div>
+            <div class="right-row">
+              <button class="key" v-for="key in navKeys2" :key="key">
+                {{ key }}
+              </button>
+            </div>
+        </div>
 
-      <!-- 第三行 -->
-      <div class="keyboard-row">
-        <button class="key key-caps">Caps Lock</button>
-        <button class="key" v-for="key in row3" :key="key.main">
-          <span class="key-main">{{ key.main }}</span>
-          <span v-if="key.dot" class="key-dot">•</span>
-        </button>
-        <button class="key">
-          <span class="key-main">:</span>
-          <span class="key-symbol">;</span>
-        </button>
-        <button class="key">
-          <span class="key-main">"</span>
-          <span class="key-symbol">'</span>
-        </button>
-        <button class="key key-enter">Enter</button>
-      </div>
-
-      <!-- 第四行 -->
-      <div class="keyboard-row">
-        <button class="key key-shift">Shift</button>
-        <button class="key" v-for="key in row4" :key="key.main">
-          <span class="key-main">{{ key.main }}</span>
-        </button>
-        <button class="key">
-          <span class="key-main"><</span>
-          <span class="key-symbol">,</span>
-        </button>
-        <button class="key">
-          <span class="key-main">></span>
-          <span class="key-symbol">.</span>
-        </button>
-        <button class="key">
-          <span class="key-main">?</span>
-          <span class="key-symbol">/</span>
-        </button>
-        <button class="key key-shift">Shift</button>
-      </div>
-
-      <!-- 第五行 -->
-      <div class="keyboard-row">
-        <button class="key key-ctrl">Ctrl</button>
-        <button class="key key-alt">Alt</button>
-        <button class="key key-space"></button>
-        <button class="key key-alt">Alt</button>
-        <button class="key key-ctrl">Ctrl</button>
+        <!-- 方向键 -->
+        <div class="right-keys">
+          <div class="right-row">
+            <button class="key">↑</button>
+          </div>
+          <div class="right-row">
+            <button class="key">←</button>
+            <button class="key">↓</button>
+            <button class="key">→</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -109,7 +164,7 @@ export default {
         { symbol: '(', main: '9' },
         { symbol: ')', main: '0' },
         { symbol: '_', main: '-' },
-        { symbol: '+', main: '=' }
+        { symbol: '+', main: '=' },
       ],
       row2: [
         { main: 'Q' },
@@ -123,7 +178,7 @@ export default {
         { main: 'O' },
         { main: 'P' },
         { main: '{', symbol: '[' },
-        { main: '}', symbol: ']' }
+        { main: '}', symbol: ']' },
       ],
       row3: [
         { main: 'A' },
@@ -134,7 +189,7 @@ export default {
         { main: 'H' },
         { main: 'J', dot: true },
         { main: 'K' },
-        { main: 'L' }
+        { main: 'L' },
       ],
       row4: [
         { main: 'Z' },
@@ -143,17 +198,23 @@ export default {
         { main: 'V' },
         { main: 'B' },
         { main: 'N' },
-        { main: 'M' }
-      ]
+        { main: 'M' },
+      ],
+      functionKeys1: ['F1', 'F2', 'F3', 'F4',],
+      functionKeys2: ['F5', 'F6', 'F7', 'F8'],
+      functionKeys3: ['F9', 'F10', 'F11', 'F12'],
+      systemKeys: ['PrtSc', 'ScrLk', 'Pause'],
+      navKeys1: ['Ins', 'Home', 'PgUp'],
+      navKeys2: ['Del', 'End', 'PgDn'],
     }
-  }
+  },
 }
 </script>
 
 <style scoped>
 .keyboard-container {
   display: flex;
-  flex-direction: direction;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
   background-color: #f5f5f5;
@@ -173,7 +234,9 @@ export default {
   background: linear-gradient(to bottom, #ffffff, #f0f0f0);
   border: 1px solid #ccc;
   border-radius: 50px 50px 40px 40px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
   position: relative;
   padding: 8px;
 }
@@ -257,10 +320,18 @@ export default {
 }
 
 .keyboard {
+  display: flex;
   background: linear-gradient(to bottom, #e8e8e8, #d8d8d8);
+  gap: 12px;
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.keyboard-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .keyboard-row {
@@ -280,7 +351,9 @@ export default {
   background: linear-gradient(to bottom, #ffffff, #f0f0f0);
   border: 1px solid #ccc;
   border-radius: 6px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
   cursor: pointer;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   display: flex;
@@ -364,19 +437,24 @@ export default {
   flex: 5;
 }
 
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .key {
-    min-width: 40px;
-    height: 45px;
-  }
-
-  .key-main {
-    font-size: 14px;
-  }
-
-  .key-symbol {
-    font-size: 10px;
-  }
+/* 功能键区域样式 */
+.function-keys {
+  display: flex;
+  justify-content: space-between;
 }
+
+/* 右侧区域键样式 */
+.right-keys {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
+
+/* 右侧区域行样式 */
+.right-row {
+  display: flex;
+  gap: 6px;
+}
+
 </style>
