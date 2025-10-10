@@ -1,5 +1,10 @@
 <template>
-  <div class="keyboard-container">
+  <div class="keyboard-container" :class="{ 'dark-mode': isDarkMode }">
+    <button class="theme-toggle" @click="toggleTheme">
+      <span v-if="isDarkMode">☀️</span>
+      <span v-else>🌙</span>
+    </button>
+
     <div class="keyboard">
       <div class="keyboard-left">
         <!-- 功能键区域 -->
@@ -154,6 +159,7 @@ export default {
   name: 'KeyboardView',
   data() {
     return {
+      isDarkMode: false,
       row1: [
         { symbol: '~', main: '`' },
         { symbol: '!', main: '1' },
@@ -211,6 +217,11 @@ export default {
       navKeys2: ['Del', 'End', 'PgDn'],
     }
   },
+  methods: {
+    toggleTheme() {
+      this.isDarkMode = !this.isDarkMode
+    }
+  }
 }
 </script>
 
@@ -224,6 +235,36 @@ export default {
   background-color: #f5f5f5;
   padding: 20px;
   gap: 40px;
+  position: relative;
+  transition: background-color 0.3s ease;
+}
+
+.theme-toggle {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  background: linear-gradient(to bottom, #ffffff, #f0f0f0);
+  cursor: pointer;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.theme-toggle:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.theme-toggle:active {
+  transform: scale(0.95);
 }
 
 .keyboard {
@@ -233,6 +274,7 @@ export default {
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  transition: background 0.3s ease;
 }
 
 .keyboard-right {
@@ -262,6 +304,7 @@ export default {
     0 2px 4px rgba(0, 0, 0, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.8);
   padding: 8px;
+  transition: all 0.3s ease;
 }
 
 .key:hover {
@@ -280,12 +323,14 @@ export default {
   top: 8px;
   left: 50%;
   transform: translateX(-50%);
+  transition: color 0.3s ease;
 }
 
 .key-main {
   font-size: 18px;
   font-weight: 500;
   color: #333;
+  transition: color 0.3s ease;
 }
 
 .key-dot {
@@ -293,6 +338,7 @@ export default {
   bottom: 12px;
   font-size: 20px;
   color: #666;
+  transition: color 0.3s ease;
 }
 
 /* 特殊按键样式 */
@@ -306,6 +352,7 @@ export default {
   font-size: 13px;
   color: #555;
   font-weight: 500;
+  transition: color 0.3s ease;
 }
 
 .key-backspace {
@@ -357,7 +404,6 @@ export default {
   gap: 6px;
 }
 
-
 /* region 鼠标样式 */
 .mouse-section {
   display: flex;
@@ -381,6 +427,7 @@ export default {
     0 4px 12px rgba(0, 0, 0, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 0.8);
   padding: 8px;
+  transition: all 0.3s ease;
 }
 
 .mouse-buttons {
@@ -394,6 +441,7 @@ export default {
   flex: 1;
   background: linear-gradient(to bottom, #fafafa, #e8e8e8);
   border: 1px solid #d0d0d0;
+  transition: all 0.3s ease;
 }
 
 .mouse-btn:hover {
@@ -437,6 +485,7 @@ export default {
   justify-content: center;
   padding-top: 6px;
   z-index: 1;
+  transition: all 0.3s ease;
 }
 
 .wheel-scroll {
@@ -445,6 +494,86 @@ export default {
   background: linear-gradient(to bottom, #999, #777);
   border-radius: 4px;
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+/* 夜间模式样式 */
+.dark-mode {
+  background-color: #1a1a1a;
+}
+
+.dark-mode .theme-toggle {
+  background: linear-gradient(to bottom, #3a3a3a, #2a2a2a);
+  border-color: #555;
+}
+
+.dark-mode .keyboard {
+  background: linear-gradient(to bottom, #2a2a2a, #1a1a1a);
+}
+
+.dark-mode .key {
+  background: linear-gradient(to bottom, #3a3a3a, #2a2a2a);
+  border-color: #555;
+  color: #e0e0e0;
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .key:hover {
+  background: linear-gradient(to bottom, #454545, #353535);
+}
+
+.dark-mode .key-symbol {
+  color: #aaa;
+}
+
+.dark-mode .key-main {
+  color: #e0e0e0;
+}
+
+.dark-mode .key-dot {
+  color: #aaa;
+}
+
+.dark-mode .key-backspace,
+.dark-mode .key-tab,
+.dark-mode .key-caps,
+.dark-mode .key-enter,
+.dark-mode .key-shift,
+.dark-mode .key-ctrl,
+.dark-mode .key-alt {
+  color: #bbb;
+}
+
+.dark-mode .mouse {
+  background: linear-gradient(to bottom, #3a3a3a, #2a2a2a);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.dark-mode .mouse-btn {
+  background: linear-gradient(to bottom, #454545, #353535);
+  border-color: #555;
+}
+
+.dark-mode .mouse-btn:hover {
+  background: linear-gradient(to bottom, #505050, #404040);
+}
+
+.dark-mode .left-btn,
+.dark-mode .right-btn {
+  border-color: #555;
+}
+
+.dark-mode .mouse-wheel {
+  background: linear-gradient(to bottom, #2a2a2a, #1a1a1a);
+  border-color: #444;
+}
+
+.dark-mode .wheel-scroll {
+  background: linear-gradient(to bottom, #666, #555);
 }
 
 /** endregion */
