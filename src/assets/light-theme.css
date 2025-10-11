@@ -1,0 +1,75 @@
+
+
+.light-mode .theme-toggle {
+  background: linear-gradient(to bottom, #ffffff, #f0f0f0);
+  border-color: #ccc;
+}
+
+.light-mode .keyboard {
+  background: linear-gradient(to bottom, #e8e8e8, #d8d8d8);
+}
+
+.light-mode .key {
+  background: linear-gradient(to bottom, #ffffff, #f0f0f0);
+  border-color: #ccc;
+  color: #1f1f1f;
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.light-mode .key:hover {
+  background: linear-gradient(to bottom, #f8f8f8, #e8e8e8);
+}
+
+.light-mode .key-symbol {
+  color: #666;
+}
+
+.light-mode .key-main {
+  color: #333;
+}
+
+.light-mode .key-dot {
+  color: #666;
+}
+
+.light-mode .key-backspace,
+.light-mode .key-tab,
+.light-mode .key-caps,
+.light-mode .key-enter,
+.light-mode .key-shift,
+.light-mode .key-ctrl,
+.light-mode .key-alt {
+  color: #555;
+}
+
+.light-mode .mouse {
+  background: linear-gradient(to bottom, #ffffff, #f0f0f0);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.light-mode .mouse-btn {
+  background: linear-gradient(to bottom, #fafafa, #e8e8e8);
+  border-color: #d0d0d0;
+}
+
+.light-mode .mouse-btn:hover {
+  background: linear-gradient(to bottom, #f0f0f0, #e0e0e0);
+}
+
+.light-mode .left-btn,
+.light-mode .right-btn {
+  border-color: #d0d0d0;
+}
+
+.light-mode .mouse-wheel {
+  background: linear-gradient(to bottom, #e0e0e0, #d0d0d0);
+  border-color: #b0b0b0;
+}
+
+.light-mode .wheel-scroll {
+  background: linear-gradient(to bottom, #999, #777);
+}

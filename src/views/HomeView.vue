@@ -1,7 +1,7 @@
 <template>
-  <div class="keyboard-container" :class="{ 'dark-mode': isDarkMode }">
+  <div class="keyboard-container" :class="{ 'light-mode': isLightMode }">
     <button class="theme-toggle" @click="toggleTheme">
-      <span v-if="isDarkMode">☀️</span>
+      <span v-if="isLightMode">☀️</span>
       <span v-else>🌙</span>
     </button>
 
@@ -159,7 +159,7 @@ export default {
   name: 'KeyboardView',
   data() {
     return {
-      isDarkMode: false,
+      isLightMode: false,
       row1: [
         { symbol: '~', main: '`' },
         { symbol: '!', main: '1' },
@@ -219,20 +219,22 @@ export default {
   },
   methods: {
     toggleTheme() {
-      this.isDarkMode = !this.isDarkMode
+      this.isLightMode = !this.isLightMode
     }
   }
 }
 </script>
 
 <style scoped>
+@import '../assets/light-theme.css';
+
 .keyboard-container {
   width: 100%;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  background-color: #f5f5f5;
+  background-color: #1a1a1a;
   padding: 20px;
   gap: 40px;
   position: relative;
@@ -246,8 +248,8 @@ export default {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  border: 2px solid #ccc;
-  background: linear-gradient(to bottom, #ffffff, #f0f0f0);
+  border: 2px solid #555;
+  background: linear-gradient(to bottom, #3a3a3a, #2a2a2a);
   cursor: pointer;
   font-size: 24px;
   display: flex;
@@ -269,7 +271,7 @@ export default {
 
 .keyboard {
   display: flex;
-  background: linear-gradient(to bottom, #e8e8e8, #d8d8d8);
+  background: linear-gradient(to bottom, #2a2a2a, #1a1a1a);
   gap: 12px;
   padding: 20px;
   border-radius: 12px;
@@ -297,18 +299,19 @@ export default {
   position: relative;
   min-width: 60px;
   height: 60px;
-  background: linear-gradient(to bottom, #ffffff, #f0f0f0);
-  border: 1px solid #ccc;
+  background: linear-gradient(to bottom, #3a3a3a, #2a2a2a);
+  border: 1px solid #555;
   border-radius: 6px;
+  color: #e0e0e0;
   box-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
   padding: 8px;
   transition: all 0.3s ease;
 }
 
 .key:hover {
-  background: linear-gradient(to bottom, #f8f8f8, #e8e8e8);
+  background: linear-gradient(to bottom, #454545, #353535);
 }
 
 .key:active {
@@ -318,7 +321,7 @@ export default {
 
 .key-symbol {
   font-size: 12px;
-  color: #666;
+  color: #aaa;
   position: absolute;
   top: 8px;
   left: 50%;
@@ -329,7 +332,7 @@ export default {
 .key-main {
   font-size: 18px;
   font-weight: 500;
-  color: #333;
+  color: #e0e0e0;
   transition: color 0.3s ease;
 }
 
@@ -337,7 +340,7 @@ export default {
   position: absolute;
   bottom: 12px;
   font-size: 20px;
-  color: #666;
+  color: #aaa;
   transition: color 0.3s ease;
 }
 
@@ -350,7 +353,7 @@ export default {
 .key-ctrl,
 .key-alt {
   font-size: 13px;
-  color: #555;
+  color: #bbb;
   font-weight: 500;
   transition: color 0.3s ease;
 }
@@ -421,11 +424,12 @@ export default {
 .mouse {
   width: 100px;
   height: 160px;
-  background: linear-gradient(to bottom, #ffffff, #f0f0f0);
+  background: linear-gradient(to bottom, #3a3a3a, #2a2a2a);
   border-radius: 50px 50px 50px 50px;
   box-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+
   padding: 8px;
   transition: all 0.3s ease;
 }
@@ -439,13 +443,13 @@ export default {
 
 .mouse-btn {
   flex: 1;
-  background: linear-gradient(to bottom, #fafafa, #e8e8e8);
-  border: 1px solid #d0d0d0;
+  background: linear-gradient(to bottom, #454545, #353535);
+  border: 1px solid #555;
   transition: all 0.3s ease;
 }
 
 .mouse-btn:hover {
-  background: linear-gradient(to bottom, #f0f0f0, #e0e0e0);
+  background: linear-gradient(to bottom, #505050, #404040);
 }
 
 .mouse-btn:active {
@@ -455,12 +459,12 @@ export default {
 
 .left-btn {
   border-radius: 40px 0 0 0;
-  border-right: 0.5px solid #d0d0d0;
+  border-right: 0.5px solid #555;
 }
 
 .right-btn {
   border-radius: 0 40px 0 0;
-  border-left: 0.5px solid #d0d0d0;
+  border-left: 0.5px solid #555;
 }
 
 .btn-label {
@@ -477,8 +481,8 @@ export default {
   top: 8px;
   width: 20px;
   height: 50px;
-  background: linear-gradient(to bottom, #e0e0e0, #d0d0d0);
-  border: 1px solid #b0b0b0;
+  background: linear-gradient(to bottom, #2a2a2a, #1a1a1a);
+  border: 1px solid #444;
   border-radius: 10px;
   display: flex;
   align-items: flex-start;
@@ -491,91 +495,16 @@ export default {
 .wheel-scroll {
   width: 8px;
   height: 18px;
-  background: linear-gradient(to bottom, #999, #777);
+  background: linear-gradient(to bottom, #666, #555);
   border-radius: 4px;
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease;
 }
 
 /* 夜间模式样式 */
-.dark-mode {
-  background-color: #1a1a1a;
+.light-mode {
+  background-color: #f5f5f5;
 }
-
-.dark-mode .theme-toggle {
-  background: linear-gradient(to bottom, #3a3a3a, #2a2a2a);
-  border-color: #555;
-}
-
-.dark-mode .keyboard {
-  background: linear-gradient(to bottom, #2a2a2a, #1a1a1a);
-}
-
-.dark-mode .key {
-  background: linear-gradient(to bottom, #3a3a3a, #2a2a2a);
-  border-color: #555;
-  color: #e0e0e0;
-  box-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-}
-
-.dark-mode .key:hover {
-  background: linear-gradient(to bottom, #454545, #353535);
-}
-
-.dark-mode .key-symbol {
-  color: #aaa;
-}
-
-.dark-mode .key-main {
-  color: #e0e0e0;
-}
-
-.dark-mode .key-dot {
-  color: #aaa;
-}
-
-.dark-mode .key-backspace,
-.dark-mode .key-tab,
-.dark-mode .key-caps,
-.dark-mode .key-enter,
-.dark-mode .key-shift,
-.dark-mode .key-ctrl,
-.dark-mode .key-alt {
-  color: #bbb;
-}
-
-.dark-mode .mouse {
-  background: linear-gradient(to bottom, #3a3a3a, #2a2a2a);
-  box-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-}
-
-.dark-mode .mouse-btn {
-  background: linear-gradient(to bottom, #454545, #353535);
-  border-color: #555;
-}
-
-.dark-mode .mouse-btn:hover {
-  background: linear-gradient(to bottom, #505050, #404040);
-}
-
-.dark-mode .left-btn,
-.dark-mode .right-btn {
-  border-color: #555;
-}
-
-.dark-mode .mouse-wheel {
-  background: linear-gradient(to bottom, #2a2a2a, #1a1a1a);
-  border-color: #444;
-}
-
-.dark-mode .wheel-scroll {
-  background: linear-gradient(to bottom, #666, #555);
-}
-
 /** endregion */
 
 </style>
