@@ -30,7 +30,7 @@
         <div class="keyboard-row">
           <button class="key" v-for="key in row1" :key="key.main">
             <span class="key-symbol">{{ key.symbol }}</span>
-            <span class="key-main">{{ key.main }}</span>
+            {{ key.main }}
           </button>
           <button class="key key-backspace">Backspace</button>
         </div>
@@ -39,7 +39,8 @@
         <div class="keyboard-row">
           <button class="key key-tab">Tab</button>
           <button class="key" v-for="key in row2" :key="key.main">
-            <span class="key-main">{{ key.main }}</span>
+            <span class="key-symbol">{{ key.symbol }}</span>
+            <span>{{ key.main }}</span>
           </button>
           <button class="key">
             <span class="key-main">|</span>
@@ -51,16 +52,9 @@
         <div class="keyboard-row">
           <button class="key key-caps">Caps Lock</button>
           <button class="key" v-for="key in row3" :key="key.main">
-            <span class="key-main">{{ key.main }}</span>
+            <span class="key-symbol">{{ key.symbol }}</span>
+            <span>{{ key.main }}</span>
             <span v-if="key.dot" class="key-dot">•</span>
-          </button>
-          <button class="key">
-            <span class="key-main">:</span>
-            <span class="key-symbol">;</span>
-          </button>
-          <button class="key">
-            <span class="key-main">"</span>
-            <span class="key-symbol">'</span>
           </button>
           <button class="key key-enter">Enter</button>
         </div>
@@ -69,19 +63,8 @@
         <div class="keyboard-row">
           <button class="key key-shift">Shift</button>
           <button class="key" v-for="key in row4" :key="key.main">
+            <span class="key-symbol">{{ key.symbol }}</span>
             <span class="key-main">{{ key.main }}</span>
-          </button>
-          <button class="key">
-            <span class="key-main"><</span>
-            <span class="key-symbol">,</span>
-          </button>
-          <button class="key">
-            <span class="key-main">></span>
-            <span class="key-symbol">.</span>
-          </button>
-          <button class="key">
-            <span class="key-main">?</span>
-            <span class="key-symbol">/</span>
           </button>
           <button class="key key-shift">Shift</button>
         </div>
@@ -103,29 +86,32 @@
             {{ key }}
           </button>
         </div>
-        <!-- 导航键区域 -->
-        <div class="right-keys">
-            <div class="right-row">
-              <button class="key" v-for="key in navKeys1" :key="key">
-                {{ key }}
-              </button>
-            </div>
-            <div class="right-row">
-              <button class="key" v-for="key in navKeys2" :key="key">
-                {{ key }}
-              </button>
-            </div>
-        </div>
-
-        <!-- 方向键 -->
-        <div class="right-keys">
-          <div class="right-row">
-            <button class="key">↑</button>
+        <!-- 辅助定位 -->
+        <div class="right-auxiliary">
+          <!-- 导航键区域 -->
+          <div class="right-keys">
+              <div class="right-row">
+                <button class="key" v-for="key in navKeys1" :key="key">
+                  {{ key }}
+                </button>
+              </div>
+              <div class="right-row">
+                <button class="key" v-for="key in navKeys2" :key="key">
+                  {{ key }}
+                </button>
+              </div>
           </div>
-          <div class="right-row">
-            <button class="key">←</button>
-            <button class="key">↓</button>
-            <button class="key">→</button>
+
+          <!-- 方向键 -->
+          <div class="right-keys">
+            <div class="right-row">
+              <button class="key">↑</button>
+            </div>
+            <div class="right-row">
+              <button class="key">←</button>
+              <button class="key">↓</button>
+              <button class="key">→</button>
+            </div>
           </div>
         </div>
       </div>
@@ -199,6 +185,8 @@ export default {
         { main: 'J', dot: true },
         { main: 'K' },
         { main: 'L' },
+        { main: ';', symbol: ':' },
+        { main: "'", symbol: '"' },
       ],
       row4: [
         { main: 'Z' },
@@ -208,6 +196,9 @@ export default {
         { main: 'B' },
         { main: 'N' },
         { main: 'M' },
+        { main: ',', symbol: '<' },
+        { main: '.', symbol: '>' },
+        { main: '/', symbol: '?' },
       ],
       functionKeys1: ['F1', 'F2', 'F3', 'F4',],
       functionKeys2: ['F5', 'F6', 'F7', 'F8'],
@@ -279,12 +270,6 @@ export default {
   transition: background 0.3s ease;
 }
 
-.keyboard-right {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
 .keyboard-row {
   display: flex;
   gap: 6px;
@@ -299,15 +284,21 @@ export default {
   position: relative;
   min-width: 60px;
   height: 60px;
+  padding: 0px 4px;
   background: linear-gradient(to bottom, #3a3a3a, #2a2a2a);
   border: 1px solid #555;
   border-radius: 6px;
-  color: #e0e0e0;
   box-shadow:
     0 2px 4px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  padding: 8px;
   transition: all 0.3s ease;
+  color: #bbb;
+  font-size: 13px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
 }
 
 .key:hover {
@@ -319,43 +310,11 @@ export default {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-.key-symbol {
-  font-size: 12px;
-  color: #aaa;
-  position: absolute;
-  top: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  transition: color 0.3s ease;
-}
-
-.key-main {
-  font-size: 18px;
-  font-weight: 500;
-  color: #e0e0e0;
-  transition: color 0.3s ease;
-}
-
 .key-dot {
   position: absolute;
-  bottom: 12px;
-  font-size: 20px;
-  color: #aaa;
-  transition: color 0.3s ease;
-}
-
-/* 特殊按键样式 */
-.key-backspace,
-.key-tab,
-.key-caps,
-.key-enter,
-.key-shift,
-.key-ctrl,
-.key-alt {
-  font-size: 13px;
-  color: #bbb;
-  font-weight: 500;
-  transition: color 0.3s ease;
+  top: 85%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .key-backspace {
@@ -387,13 +346,26 @@ export default {
   flex: 5;
 }
 
-/* 功能键区域样式 */
+/* 功能键区域 */
 .function-keys {
   display: flex;
   justify-content: space-between;
 }
 
-/* 右侧区域键样式 */
+/* 右侧区域 */
+.keyboard-right {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.right-auxiliary {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
 .right-keys {
   display: flex;
   flex-direction: column;
@@ -401,13 +373,12 @@ export default {
   align-items: center;
 }
 
-/* 右侧区域行样式 */
 .right-row {
   display: flex;
   gap: 6px;
 }
 
-/* region 鼠标样式 */
+/* 鼠标 */
 .mouse-section {
   display: flex;
   flex-direction: row;
@@ -501,10 +472,9 @@ export default {
   transition: all 0.3s ease;
 }
 
-/* 夜间模式样式 */
+/* 日间模式 */
 .light-mode {
   background-color: #f5f5f5;
 }
-/** endregion */
 
 </style>
