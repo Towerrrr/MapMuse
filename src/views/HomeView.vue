@@ -41,6 +41,7 @@
           <button class="key" v-for="key in row2" :key="key.main">
             <span class="key-symbol">{{ key.symbol }}</span>
             <span>{{ key.main }}</span>
+            <div class="function-text">返回桌面</div>
           </button>
           <button class="key">
             <span class="key-main">|</span>
@@ -98,6 +99,7 @@
               <div class="right-row">
                 <button class="key" v-for="key in navKeys2" :key="key">
                   {{ key }}
+                  <div class="function-text">返回桌面</div>
                 </button>
               </div>
           </div>
@@ -117,7 +119,7 @@
       </div>
     </div>
 
-    <!-- 鼠标部分 -->
+    <!-- todo 分离鼠标部分 -->
     <div class="mouse-section">
       <div class="side-buttons">
         <div class="key"></div>
@@ -219,6 +221,11 @@ export default {
 <style scoped>
 @import '../assets/light-theme.css';
 
+.function-text {
+  color: #8685ef;
+  font-size: 11px;
+}
+
 .keyboard-container {
   width: 100%;
   display: flex;
@@ -282,9 +289,8 @@ export default {
 
 .key {
   position: relative;
-  min-width: 60px;
-  height: 60px;
-  padding: 0px 4px;
+  min-width: 65px;
+  height: 65px;
   background: linear-gradient(to bottom, #3a3a3a, #2a2a2a);
   border: 1px solid #555;
   border-radius: 6px;
@@ -294,11 +300,8 @@ export default {
   transition: all 0.3s ease;
   color: #bbb;
   font-size: 13px;
-  text-align: left;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
 }
 
 .key:hover {
