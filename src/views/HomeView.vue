@@ -56,6 +56,9 @@
           <key v-for="key in row3" :key="key.main">
             <span >{{ key.symbol }}</span>
             <span>{{ key.main }}</span>
+            <div class="function-text" v-if="keyFunctions[key.main]">
+              {{ keyFunctions[key.main] }}
+            </div>
             <span v-if="key.dot" class="key-dot">•</span>
           </key>
           <key style="flex: 1.8">Enter</key>
@@ -205,8 +208,13 @@ export default {
       systemKeys: ['PrtSc', 'ScrLk', 'Pause'],
       navKeys1: ['Ins', 'Home', 'PgUp'],
       navKeys2: ['Del', 'End', 'PgDn'],
+      keyFunctions: {}
     }
   },
+  mounted() {
+    // 通过 preload 暴露的方法同步读取
+    this.keyFunctions = window.electronAPI.loadKeyFunctions()
+  }
 }
 </script>
 
