@@ -44,12 +44,18 @@
 
         <!-- 第三行 -->
         <div class="keyboard-row">
-          <key style="flex: 1.6">
-            Caps Lock
-            <div class="function-text" v-if="keyFunctions['Caps Lock']">
-              {{ keyFunctions['Caps Lock'] }}
-            </div>
-          </key>
+          <popover
+            :content="keyFunctions['Caps Lock']">
+            <template #default>
+              <key style="flex: 1.6">
+                Caps Lock
+                <div class="function-text" v-if="keyFunctions['Caps Lock']">
+                  {{ keyFunctions['Caps Lock'] }}
+                </div>
+              </key>
+            </template>
+          </popover>
+
           <key v-for="key in row3" :key="key.main">
             <div>{{ key.main }} {{ key.symbol }}</div>
             <div class="function-text" v-if="keyFunctions[key.main]">
@@ -131,6 +137,8 @@
 import mouse from '@/components/mouse.vue'
 import themeToggle from '@/components/theme-toggle.vue'
 import key from '@/components/key.vue'
+import popover from '@/components/popover.vue'
+import Popover from '@/components/popover.vue'
 
 export default {
   name: 'KeyboardView',
@@ -138,6 +146,7 @@ export default {
     mouse,
     themeToggle,
     key,
+    popover,
   },
   data() {
     return {
