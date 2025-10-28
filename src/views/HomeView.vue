@@ -1,10 +1,6 @@
 <template>
   <div class="keyboard-container" :class="{ 'light-mode': isLightMode }">
-
-    <theme-toggle
-      :isLightMode="isLightMode"
-      @update:isLightMode="isLightMode = $event"
-    />
+    <theme-toggle :isLightMode="isLightMode" @update:isLightMode="isLightMode = $event" />
 
     <div class="keyboard">
       <div class="keyboard-left">
@@ -30,32 +26,32 @@
         <!-- 第一行 -->
         <div class="keyboard-row">
           <key v-for="key in row1" :key="key.main">
-            <span >{{ key.symbol }}</span>
-            {{ key.main }}
+            <div>{{ key.main }} {{ key.symbol }}</div>
           </key>
-          <key style="flex: 1.5;">Backspace</key>
+          <key style="flex: 1.5">Backspace</key>
         </div>
 
         <!-- 第二行 -->
         <div class="keyboard-row">
-          <key style="flex: 1.3;">Tab</key>
+          <key style="flex: 1.3">Tab</key>
           <key v-for="key in row2" :key="key.main">
-            <span >{{ key.symbol }}</span>
-            <span>{{ key.main }}</span>
-            <div class="function-text">返回桌面</div>
+            <div>{{ key.main }} {{ key.symbol }}</div>
           </key>
           <key>
-            <span>|</span>
-            <span >\</span>
+            <div>\ |</div>
           </key>
         </div>
 
         <!-- 第三行 -->
         <div class="keyboard-row">
-          <key style="flex: 1.6">Caps Lock</key>
+          <key style="flex: 1.6">
+            Caps Lock
+            <div class="function-text" v-if="keyFunctions['Caps Lock']">
+              {{ keyFunctions['Caps Lock'] }}
+            </div>
+          </key>
           <key v-for="key in row3" :key="key.main">
-            <span >{{ key.symbol }}</span>
-            <span>{{ key.main }}</span>
+            <div>{{ key.main }} {{ key.symbol }}</div>
             <div class="function-text" v-if="keyFunctions[key.main]">
               {{ keyFunctions[key.main] }}
             </div>
@@ -68,8 +64,7 @@
         <div class="keyboard-row">
           <key style="flex: 2">Shift</key>
           <key v-for="key in row4" :key="key.main">
-            <span >{{ key.symbol }}</span>
-            <span>{{ key.main }}</span>
+            <div>{{ key.main }} {{ key.symbol }}</div>
           </key>
           <key style="flex: 2">Shift</key>
         </div>
@@ -103,7 +98,6 @@
             <div class="right-row">
               <key v-for="key in navKeys2" :key="key">
                 {{ key }}
-                <div class="function-text">返回桌面</div>
               </key>
             </div>
           </div>
@@ -134,9 +128,9 @@
 </template>
 
 <script>
-import mouse from '@/components/mouse.vue';
-import themeToggle from '@/components/theme-toggle.vue';
-import key from '@/components/key.vue';
+import mouse from '@/components/mouse.vue'
+import themeToggle from '@/components/theme-toggle.vue'
+import key from '@/components/key.vue'
 
 export default {
   name: 'KeyboardView',
@@ -174,8 +168,8 @@ export default {
         { main: 'I' },
         { main: 'O' },
         { main: 'P' },
-        { main: '{', symbol: '[' },
-        { main: '}', symbol: ']' },
+        { main: '[', symbol: '{' },
+        { main: ']', symbol: '}' },
       ],
       row3: [
         { main: 'A' },
@@ -208,13 +202,13 @@ export default {
       systemKeys: ['PrtSc', 'ScrLk', 'Pause'],
       navKeys1: ['Ins', 'Home', 'PgUp'],
       navKeys2: ['Del', 'End', 'PgDn'],
-      keyFunctions: {}
+      keyFunctions: {},
     }
   },
   mounted() {
     // 通过 preload 暴露的方法同步读取
     this.keyFunctions = window.electronAPI.loadKeyFunctions()
-  }
+  },
 }
 </script>
 
@@ -224,6 +218,7 @@ export default {
 .function-text {
   color: #8685ef;
   font-size: 11px;
+  text-align: center;
 }
 
 .keyboard-container {
@@ -311,7 +306,6 @@ export default {
   flex-direction: column;
   gap: 6px;
 }
-
 
 /* 日间模式 */
 .light-mode {

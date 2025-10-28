@@ -11,14 +11,14 @@ export default {
   props: {
     isLightMode: {
       type: Boolean,
-      required: true
+      required: true,
     },
   },
   methods: {
     handleToggleTheme() {
-      this.$emit('update:isLightMode', !this.isLightMode);
-    }
-  }
+      this.$emit('update:isLightMode', !this.isLightMode)
+    },
+  },
 }
 </script>
 
