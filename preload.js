@@ -22,4 +22,14 @@ contextBridge.exposeInMainWorld('electronAPI', {
       return {}
     }
   },
+  saveKeyFunctions: (data) => {
+    const filePath = path.join(process.cwd(), 'public', 'key-functions.json')
+    try {
+      fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8')
+      return true
+    } catch (e) {
+      console.error('写入 key-functions.json 出错:', e)
+      return false
+    }
+  },
 })

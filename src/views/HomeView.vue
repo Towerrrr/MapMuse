@@ -44,8 +44,7 @@
 
         <!-- 第三行 -->
         <div class="keyboard-row">
-          <popover
-            :content="keyFunctions['Caps Lock']">
+          <popover :content="keyFunctions['Caps Lock']">
             <template #default>
               <key style="flex: 1.6">
                 Caps Lock
@@ -56,13 +55,25 @@
             </template>
           </popover>
 
-          <key v-for="key in row3" :key="key.main">
+          <key v-for="key in row3" :key="key.main" @click="startEdit(key.main)">
             <div>{{ key.main }} {{ key.symbol }}</div>
-            <div class="function-text" v-if="keyFunctions[key.main]">
+            <div class="function-text" v-if="editingKey === key.main">
+              <input
+                v-model="editText"
+                @blur="saveFunctionText(key.main)"
+                @keyup.enter="saveFunctionText(key.main)"
+                style="width: 50px;background-color: transparent; outline: none; border: none;"
+              />
+            </div>
+            <div
+              class="function-text"
+              v-else-if="keyFunctions[key.main]"
+            >
               {{ keyFunctions[key.main] }}
             </div>
             <span v-if="key.dot" class="key-dot">•</span>
           </key>
+
           <key style="flex: 1.8">Enter</key>
         </div>
 
@@ -151,6 +162,7 @@ export default {
   data() {
     return {
       isLightMode: false,
+      editingKey: null,
       row1: [
         { symbol: '~', main: '`' },
         { symbol: '!', main: '1' },
@@ -215,8 +227,31 @@ export default {
     }
   },
   mounted() {
-    // 通过 preload 暴露的方法同步读取
     this.keyFunctions = window.electronAPI.loadKeyFunctions()
+  },
+  methods: {
+    startEdit(keyName) {
+      this.editingKey = keyName
+      this.editText = this.keyFunctions[keyName] || ''
+      this.$nextTick(() => {
+        this.$refs.editInput && this.$refs.editInput.focus()
+      })
+    },
+    saveFunctionText(keyName) {
+      if (this.editingKey) {
+        if (this.editText.trim() !== '') {
+          this.keyFunctions[keyName] = this.editText
+        } else {
+          delete this.keyFunctions[keyName]
+        }
+        if (window.electronAPI && window.electronAPI.saveKeyFunctions) {
+          const rawKeyFunctions = JSON.parse(JSON.stringify(this.keyFunctions))
+          window.electronAPI.saveKeyFunctions(rawKeyFunctions)
+        }
+        this.editingKey = null
+        this.editText = ''
+      }
+    }
   },
 }
 </script>
