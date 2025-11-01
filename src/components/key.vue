@@ -2,6 +2,18 @@
   <div class="key" @click="$emit('click')">
     <slot></slot>
   </div>
+
+<!-- todo 气泡示例（父组件使用示例） -->
+<!-- <popover :content="keyFunctions['Caps Lock']">
+  <template #default>
+    <key style="flex: 1.6">
+      Caps Lock
+      <div class="function-text" v-if="keyFunctions['Caps Lock']">
+        {{ keyFunctions['Caps Lock'] }}
+      </div>
+    </key>
+  </template>
+</popover> -->
 </template>
 
 <script setup lang="ts"></script>

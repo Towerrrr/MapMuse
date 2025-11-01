@@ -6,57 +6,25 @@
       <div class="keyboard-left">
         <!-- 功能键区域 -->
         <div class="keyboard-row function-keys">
-          <key>Esc</key>
-          <div class="keyboard-row">
-            <key v-for="key in functionKeys1" :key="key">
-              {{ key }}
-            </key>
-          </div>
-          <div class="keyboard-row">
-            <key v-for="key in functionKeys2" :key="key">
-              {{ key }}
-            </key>
-          </div>
-          <div class="keyboard-row">
-            <key v-for="key in functionKeys3" :key="key">
+          <div class="keyboard-row" v-for="functionRow in functionKeys">
+            <key v-for="key in functionRow" :key="key">
               {{ key }}
             </key>
           </div>
         </div>
-        <!-- 第一行 -->
-        <div class="keyboard-row">
-          <key v-for="key in row1" :key="key.main">
-            <div>{{ key.main }} {{ key.symbol }}</div>
-          </key>
-          <key style="flex: 1.5">Backspace</key>
-        </div>
 
-        <!-- 第二行 -->
-        <div class="keyboard-row">
-          <key style="flex: 1.3">Tab</key>
-          <key v-for="key in row2" :key="key.main">
-            <div>{{ key.main }} {{ key.symbol }}</div>
-          </key>
-          <key>
-            <div>\ |</div>
-          </key>
-        </div>
+        <!-- 主键区 -->
+        <div class="keyboard-row" v-for="row in rows">
+          <key
+            v-for="key in row"
+            :style="key.flex ? { flex: key.flex } : null"
+            @click="startEdit(key.main)"
+          >
+            <div>
+              {{ key.main }}
+              <span v-if="key.symbol"> {{ key.symbol }}</span>
+            </div>
 
-        <!-- 第三行 -->
-        <div class="keyboard-row">
-          <popover :content="keyFunctions['Caps Lock']">
-            <template #default>
-              <key style="flex: 1.6">
-                Caps Lock
-                <div class="function-text" v-if="keyFunctions['Caps Lock']">
-                  {{ keyFunctions['Caps Lock'] }}
-                </div>
-              </key>
-            </template>
-          </popover>
-
-          <key v-for="key in row3" :key="key.main" @click="startEdit(key.main)">
-            <div>{{ key.main }} {{ key.symbol }}</div>
             <div class="function-text" v-if="editingKey === key.main">
               <input
                 v-model="editText"
@@ -71,28 +39,9 @@
             >
               {{ keyFunctions[key.main] }}
             </div>
+
             <span v-if="key.dot" class="key-dot">•</span>
           </key>
-
-          <key style="flex: 1.8">Enter</key>
-        </div>
-
-        <!-- 第四行 -->
-        <div class="keyboard-row">
-          <key style="flex: 2">Shift</key>
-          <key v-for="key in row4" :key="key.main">
-            <div>{{ key.main }} {{ key.symbol }}</div>
-          </key>
-          <key style="flex: 2">Shift</key>
-        </div>
-
-        <!-- 第五行 -->
-        <div class="keyboard-row">
-          <key style="flex: 1.2">Ctrl</key>
-          <key style="flex: 1.2">Alt</key>
-          <key style="flex: 5"></key>
-          <key style="flex: 1.2">Alt</key>
-          <key style="flex: 1.2">Ctrl</key>
         </div>
       </div>
 
@@ -107,13 +56,8 @@
         <div class="right-auxiliary">
           <!-- 导航键区域 -->
           <div class="right-keys">
-            <div class="right-row">
-              <key v-for="key in navKeys1" :key="key">
-                {{ key }}
-              </key>
-            </div>
-            <div class="right-row">
-              <key v-for="key in navKeys2" :key="key">
+            <div class="right-row" v-for="navRow in navKeys">
+              <key v-for="key in navRow" :key="key">
                 {{ key }}
               </key>
             </div>
@@ -121,13 +65,8 @@
 
           <!-- 方向键 -->
           <div class="right-keys">
-            <div class="right-row">
-              <key>↑</key>
-            </div>
-            <div class="right-row">
-              <key>←</key>
-              <key>↓</key>
-              <key>→</key>
+            <div class="right-row" v-for="directionRow in directionKeys">
+              <key v-for="key in directionRow" :key="key">{{ key }}</key>
             </div>
           </div>
         </div>
@@ -149,7 +88,7 @@ import mouse from '@/components/mouse.vue'
 import themeToggle from '@/components/theme-toggle.vue'
 import key from '@/components/key.vue'
 import popover from '@/components/popover.vue'
-import Popover from '@/components/popover.vue'
+import keyboardLayout from '@/data/keyboard-layout.json'
 
 export default {
   name: 'KeyboardView',
@@ -163,66 +102,7 @@ export default {
     return {
       isLightMode: false,
       editingKey: null,
-      row1: [
-        { symbol: '~', main: '`' },
-        { symbol: '!', main: '1' },
-        { symbol: '@', main: '2' },
-        { symbol: '#', main: '3' },
-        { symbol: '$', main: '4' },
-        { symbol: '%', main: '5' },
-        { symbol: '^', main: '6' },
-        { symbol: '&', main: '7' },
-        { symbol: '*', main: '8' },
-        { symbol: '(', main: '9' },
-        { symbol: ')', main: '0' },
-        { symbol: '_', main: '-' },
-        { symbol: '+', main: '=' },
-      ],
-      row2: [
-        { main: 'Q' },
-        { main: 'W' },
-        { main: 'E' },
-        { main: 'R' },
-        { main: 'T' },
-        { main: 'Y' },
-        { main: 'U' },
-        { main: 'I' },
-        { main: 'O' },
-        { main: 'P' },
-        { main: '[', symbol: '{' },
-        { main: ']', symbol: '}' },
-      ],
-      row3: [
-        { main: 'A' },
-        { main: 'S' },
-        { main: 'D' },
-        { main: 'F', dot: true },
-        { main: 'G' },
-        { main: 'H' },
-        { main: 'J', dot: true },
-        { main: 'K' },
-        { main: 'L' },
-        { main: ';', symbol: ':' },
-        { main: "'", symbol: '"' },
-      ],
-      row4: [
-        { main: 'Z' },
-        { main: 'X' },
-        { main: 'C' },
-        { main: 'V' },
-        { main: 'B' },
-        { main: 'N' },
-        { main: 'M' },
-        { main: ',', symbol: '<' },
-        { main: '.', symbol: '>' },
-        { main: '/', symbol: '?' },
-      ],
-      functionKeys1: ['F1', 'F2', 'F3', 'F4'],
-      functionKeys2: ['F5', 'F6', 'F7', 'F8'],
-      functionKeys3: ['F9', 'F10', 'F11', 'F12'],
-      systemKeys: ['PrtSc', 'ScrLk', 'Pause'],
-      navKeys1: ['Ins', 'Home', 'PgUp'],
-      navKeys2: ['Del', 'End', 'PgDn'],
+      ...keyboardLayout,
       keyFunctions: {},
     }
   },
