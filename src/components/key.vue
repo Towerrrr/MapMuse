@@ -1,10 +1,22 @@
 <template>
-  <div class="key" @click="$emit('click')">
+  <div class="key" @click="handleClick">
     <slot></slot>
+    <div v-if="isEditing" class="function-text">
+      <input
+        v-model="editText"
+        @blur="save"
+        @keyup.enter="save"
+        ref="editInput"
+        style="width: 50px; background: transparent; outline: none; border: none"
+      />
+    </div>
+    <div v-else-if="keyFunctions && keyFunctions[keyName]" class="function-text">
+      {{ keyFunctions[keyName] }}
+    </div>
   </div>
 
-<!-- todo 气泡示例（父组件使用示例） -->
-<!-- <popover :content="keyFunctions['Caps Lock']">
+  <!-- todo 气泡示例（父组件使用示例） -->
+  <!-- <popover :content="keyFunctions['Caps Lock']">
   <template #default>
     <key style="flex: 1.6">
       Caps Lock
@@ -16,7 +28,32 @@
 </popover> -->
 </template>
 
-<script setup lang="ts"></script>
+<script setup>
+import { ref, nextTick } from 'vue'
+
+const props = defineProps({
+  keyName: String,
+  keyFunctions: Object,
+})
+const emit = defineEmits(['save'])
+
+const isEditing = ref(false)
+const editText = ref('')
+const editInput = ref(null)
+
+function handleClick() {
+  isEditing.value = true
+  editText.value = props.keyFunctions?.[props.keyName] || ''
+  nextTick(() => {
+    editInput.value && editInput.value.focus()
+  })
+}
+
+function save() {
+  isEditing.value = false
+  emit('save', { keyName: props.keyName, text: editText.value })
+}
+</script>
 
 <style scoped>
 .key {
@@ -44,5 +81,11 @@
 .key:active {
   transform: translateY(2px);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.function-text {
+  color: #8685ef;
+  font-size: 11px;
+  text-align: center;
 }
 </style>

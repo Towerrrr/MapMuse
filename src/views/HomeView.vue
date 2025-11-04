@@ -7,7 +7,12 @@
         <!-- 功能键区域 -->
         <div class="keyboard-row function-keys">
           <div class="keyboard-row" v-for="functionRow in functionKeys">
-            <key v-for="key in functionRow" :key="key">
+            <key
+              v-for="key in functionRow"
+              :keyName="key"
+              :keyFunctions="keyFunctions"
+              @save="saveFunctionText"
+            >
               {{ key }}
             </key>
           </div>
@@ -17,27 +22,14 @@
         <div class="keyboard-row" v-for="row in rows">
           <key
             v-for="key in row"
+            :keyName="key.main"
+            :keyFunctions="keyFunctions"
             :style="key.flex ? { flex: key.flex } : null"
-            @click="startEdit(key.main)"
+            @save="saveFunctionText"
           >
             <div>
               {{ key.main }}
               <span v-if="key.symbol"> {{ key.symbol }}</span>
-            </div>
-
-            <div class="function-text" v-if="editingKey === key.main">
-              <input
-                v-model="editText"
-                @blur="saveFunctionText(key.main)"
-                @keyup.enter="saveFunctionText(key.main)"
-                style="width: 50px;background-color: transparent; outline: none; border: none;"
-              />
-            </div>
-            <div
-              class="function-text"
-              v-else-if="keyFunctions[key.main]"
-            >
-              {{ keyFunctions[key.main] }}
             </div>
 
             <span v-if="key.dot" class="key-dot">•</span>
@@ -48,7 +40,12 @@
       <!-- 键盘右侧区域 -->
       <div class="keyboard-right">
         <div class="right-row">
-          <key v-for="key in systemKeys" :key="key">
+          <key
+            v-for="key in systemKeys"
+            :keyName="key"
+            :keyFunctions="keyFunctions"
+            @save="saveFunctionText"
+          >
             {{ key }}
           </key>
         </div>
@@ -57,7 +54,12 @@
           <!-- 导航键区域 -->
           <div class="right-keys">
             <div class="right-row" v-for="navRow in navKeys">
-              <key v-for="key in navRow" :key="key">
+              <key
+                v-for="key in navRow"
+                :keyName="key"
+                :keyFunctions="keyFunctions"
+                @save="saveFunctionText"
+              >
                 {{ key }}
               </key>
             </div>
@@ -66,7 +68,13 @@
           <!-- 方向键 -->
           <div class="right-keys">
             <div class="right-row" v-for="directionRow in directionKeys">
-              <key v-for="key in directionRow" :key="key">{{ key }}</key>
+              <key
+                v-for="key in directionRow"
+                :keyName="key"
+                :keyFunctions="keyFunctions"
+                @save="saveFunctionText"
+                >{{ key }}</key
+              >
             </div>
           </div>
         </div>
@@ -110,40 +118,20 @@ export default {
     this.keyFunctions = window.electronAPI.loadKeyFunctions()
   },
   methods: {
-    startEdit(keyName) {
-      this.editingKey = keyName
-      this.editText = this.keyFunctions[keyName] || ''
-      this.$nextTick(() => {
-        this.$refs.editInput && this.$refs.editInput.focus()
-      })
-    },
-    saveFunctionText(keyName) {
-      if (this.editingKey) {
-        if (this.editText.trim() !== '') {
-          this.keyFunctions[keyName] = this.editText
-        } else {
-          delete this.keyFunctions[keyName]
-        }
-        if (window.electronAPI && window.electronAPI.saveKeyFunctions) {
-          const rawKeyFunctions = JSON.parse(JSON.stringify(this.keyFunctions))
-          window.electronAPI.saveKeyFunctions(rawKeyFunctions)
-        }
-        this.editingKey = null
-        this.editText = ''
+    saveFunctionText({ keyName, text }) {
+      if (text.trim() !== '') {
+        this.keyFunctions[keyName] = text
+      } else {
+        delete this.keyFunctions[keyName]
       }
-    }
+      window.electronAPI.saveKeyFunctions(JSON.parse(JSON.stringify(this.keyFunctions)))
+    },
   },
 }
 </script>
 
 <style scoped>
 @import '../assets/light-theme.css';
-
-.function-text {
-  color: #8685ef;
-  font-size: 11px;
-  text-align: center;
-}
 
 .keyboard-container {
   width: 100%;
