@@ -1,5 +1,6 @@
 <template>
   <div class="keyboard-container" :class="{ 'light-mode': isLightMode }">
+    <dropdown @modifierChange="currentModifier = $event" />
     <theme-toggle :isLightMode="isLightMode" @update:isLightMode="isLightMode = $event" />
 
     <div class="keyboard">
@@ -11,6 +12,7 @@
               v-for="key in functionRow"
               :keyName="key"
               :keyFunctions="keyFunctions"
+              :modifier="currentModifier"
               @save="saveFunctionText"
             >
               {{ key }}
@@ -25,6 +27,7 @@
             :keyName="key.main"
             :keyFunctions="keyFunctions"
             :style="key.flex ? { flex: key.flex } : null"
+            :modifier="currentModifier"
             @save="saveFunctionText"
           >
             <div>
@@ -44,6 +47,7 @@
             v-for="key in systemKeys"
             :keyName="key"
             :keyFunctions="keyFunctions"
+            :modifier="currentModifier"
             @save="saveFunctionText"
           >
             {{ key }}
@@ -58,6 +62,7 @@
                 v-for="key in navRow"
                 :keyName="key"
                 :keyFunctions="keyFunctions"
+                :modifier="currentModifier"
                 @save="saveFunctionText"
               >
                 {{ key }}
@@ -72,6 +77,7 @@
                 v-for="key in directionRow"
                 :keyName="key"
                 :keyFunctions="keyFunctions"
+                :modifier="currentModifier"
                 @save="saveFunctionText"
                 >{{ key }}</key
               >
@@ -97,6 +103,7 @@ import themeToggle from '@/components/theme-toggle.vue'
 import key from '@/components/key.vue'
 import popover from '@/components/popover.vue'
 import keyboardLayout from '@/data/keyboard-layout.json'
+import dropdown from '@/components/dropdown.vue'
 
 export default {
   name: 'KeyboardView',
@@ -105,6 +112,7 @@ export default {
     themeToggle,
     key,
     popover,
+    dropdown
   },
   data() {
     return {
@@ -112,6 +120,7 @@ export default {
       editingKey: null,
       ...keyboardLayout,
       keyFunctions: {},
+      currentModifier: '',
     }
   },
   mounted() {

@@ -11,9 +11,16 @@
       />
     </div>
     <div v-else-if="keyFunctions && keyFunctions[keyName]" class="function-text">
-      <div v-for="text in keyFunctions[keyName]">
-        {{ text }}
-      </div>
+      <template v-if="modifier">
+        <div v-if="keyFunctions[keyName][modifier]">
+          {{ keyFunctions[keyName][modifier] }}
+        </div>
+      </template>
+      <template v-else>
+        <div v-for="(text, name) in keyFunctions[keyName]" :key="name">
+          {{ text }}
+        </div>
+      </template>
     </div>
   </div>
 
@@ -36,6 +43,7 @@ import { ref, nextTick } from 'vue'
 const props = defineProps({
   keyName: String,
   keyFunctions: Object,
+  modifier: String,
 })
 const emit = defineEmits(['save'])
 
