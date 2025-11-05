@@ -1,0 +1,19 @@
+<div v-if="isEditing" class="function-text">
+  <input
+    v-model="editText"
+    @blur="save"
+    @keyup.enter="save"
+    ref="editInput"
+    style="width: 50px; background: transparent; outline: none; border: none"
+  />
+</div>
+<div v-else-if="keyFunctions && keyFunctions[keyName]" class="function-text">
+  <div
+    v-for="(text, field) in keyFunctions[keyName]"
+    :key="field"
+    class="function-field"
+    @dblclick="startEdit(field, text)"
+  >
+    <span class="field-label" v-if="field !== 'main'">{{ field }}: </span>{{ text }}
+  </div>
+</div>

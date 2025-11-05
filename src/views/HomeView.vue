@@ -118,14 +118,20 @@ export default {
     this.keyFunctions = window.electronAPI.loadKeyFunctions()
   },
   methods: {
-    saveFunctionText({ keyName, text }) {
+    saveFunctionText({ keyName, field, text }) {
+      if (!this.keyFunctions[keyName]) {
+        this.keyFunctions[keyName] = {}
+      }
       if (text.trim() !== '') {
-        this.keyFunctions[keyName] = text
+        this.keyFunctions[keyName][field] = text
       } else {
-        delete this.keyFunctions[keyName]
+        delete this.keyFunctions[keyName][field]
+        if (Object.keys(this.keyFunctions[keyName]).length === 0) {
+          delete this.keyFunctions[keyName]
+        }
       }
       window.electronAPI.saveKeyFunctions(JSON.parse(JSON.stringify(this.keyFunctions)))
-    },
+    }
   },
 }
 </script>

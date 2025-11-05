@@ -82,8 +82,5 @@
     ["Ins", "Home", "PgUp"],
     ["Del", "End", "PgDn"]
   ],
-  "directionKeys": [
-    ["↑"],
-    ["←", "↓", "→"]
-  ]
+  "directionKeys": [["↑"], ["←", "↓", "→"]]
 }

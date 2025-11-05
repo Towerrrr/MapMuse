@@ -11,7 +11,9 @@
       />
     </div>
     <div v-else-if="keyFunctions && keyFunctions[keyName]" class="function-text">
-      {{ keyFunctions[keyName] }}
+      <div v-for="text in keyFunctions[keyName]">
+        {{ text }}
+      </div>
     </div>
   </div>
 
@@ -38,12 +40,14 @@ const props = defineProps({
 const emit = defineEmits(['save'])
 
 const isEditing = ref(false)
+const editingField = ref('Main')
 const editText = ref('')
 const editInput = ref(null)
 
 function handleClick() {
+  editingField.value = 'Main'
   isEditing.value = true
-  editText.value = props.keyFunctions?.[props.keyName] || ''
+  editText.value = props.keyFunctions?.[props.keyName]?.Main || ''
   nextTick(() => {
     editInput.value && editInput.value.focus()
   })
@@ -51,8 +55,13 @@ function handleClick() {
 
 function save() {
   isEditing.value = false
-  emit('save', { keyName: props.keyName, text: editText.value })
+  emit('save', {
+    keyName: props.keyName,
+    field: editingField.value,
+    text: editText.value
+  })
 }
+
 </script>
 
 <style scoped>
