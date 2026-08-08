@@ -112,7 +112,7 @@ export default {
     themeToggle,
     key,
     popover,
-    dropdown
+    dropdown,
   },
   data() {
     return {
@@ -140,7 +140,7 @@ export default {
         }
       }
       window.electronAPI.saveKeyFunctions(JSON.parse(JSON.stringify(this.keyFunctions)))
-    }
+    },
   },
 }
 </script>

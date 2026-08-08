@@ -66,10 +66,9 @@ function save() {
   emit('save', {
     keyName: props.keyName,
     field: editingField.value,
-    text: editText.value
+    text: editText.value,
   })
 }
-
 </script>
 
 <style scoped>

@@ -34,7 +34,7 @@ import { ref } from 'vue'
 const emit = defineEmits(['modifierChange'])
 const currentModifier = ref('')
 
-const handleMenuClick = e => {
+const handleMenuClick = (e) => {
   let modifier = e.key
   if (modifier === 'default') {
     currentModifier.value = ''
@@ -59,5 +59,4 @@ const handleMenuClick = e => {
   width: 50px;
   height: 50px;
 }
-
 </style>
