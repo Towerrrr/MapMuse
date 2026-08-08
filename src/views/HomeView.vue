@@ -8,103 +8,35 @@
     />
 
     <div class="keyboard-container">
-      <button class="keyboard-container__profile-editor-toggle" type="button" @click="toggleProfileEditor">
-        {{ isProfileEditorOpen ? '关闭配置编辑' : '编辑当前配置' }}
-      </button>
-      <profile-editor
-        v-if="isProfileEditorOpen"
-        class="keyboard-container__profile-editor"
+      <keyboard-toolbar
         :isLightMode="isLightMode"
+        :isProfileEditorOpen="isProfileEditorOpen"
         :profileKey="currentProfile"
         :profileName="currentProfileMeta.name"
         :profileIcon="currentProfileMeta.icon"
-        @update="updateCurrentProfileMeta"
+        @toggle-profile-editor="toggleProfileEditor"
+        @update-profile-meta="updateCurrentProfileMeta"
+        @update:isLightMode="isLightMode = $event"
+        @modifier-change="currentModifier = $event"
       />
-      <theme-toggle :isLightMode="isLightMode" @update:isLightMode="isLightMode = $event" />
-      <dropdown :isLightMode="isLightMode" @modifierChange="currentModifier = $event" />
 
       <div class="keyboard">
-        <div class="keyboard-left">
-          <!-- 功能键区域 -->
-          <div class="keyboard-row function-keys">
-            <div class="keyboard-row" v-for="functionRow in functionKeys">
-              <key
-                v-for="key in functionRow"
-                :keyName="key"
-                :keyFunctions="currentKeyFunctions"
-                :modifier="currentModifier"
-                @save="saveFunctionText"
-              >
-                {{ key }}
-              </key>
-            </div>
-          </div>
+        <keyboard-left-panel
+          :functionKeys="functionKeys"
+          :rows="rows"
+          :currentKeyFunctions="currentKeyFunctions"
+          :currentModifier="currentModifier"
+          @save="saveFunctionText"
+        />
 
-          <!-- 主键区 -->
-          <div class="keyboard-row" v-for="row in rows">
-            <key
-              v-for="key in row"
-              :keyName="key.main"
-              :keyFunctions="currentKeyFunctions"
-              :style="key.flex ? { flex: key.flex } : null"
-              :modifier="currentModifier"
-              @save="saveFunctionText"
-            >
-              <div>
-                {{ key.main }}
-                <span v-if="key.symbol"> {{ key.symbol }}</span>
-              </div>
-
-              <span v-if="key.dot" class="key-dot">•</span>
-            </key>
-          </div>
-        </div>
-
-        <!-- 键盘右侧区域 -->
-        <div class="keyboard-right">
-          <div class="right-row">
-            <key
-              v-for="key in systemKeys"
-              :keyName="key"
-              :keyFunctions="currentKeyFunctions"
-              :modifier="currentModifier"
-              @save="saveFunctionText"
-            >
-              {{ key }}
-            </key>
-          </div>
-          <!-- 辅助定位 -->
-          <div class="right-auxiliary">
-            <!-- 导航键区域 -->
-            <div class="right-keys">
-              <div class="right-row" v-for="navRow in navKeys">
-                <key
-                  v-for="key in navRow"
-                  :keyName="key"
-                  :keyFunctions="currentKeyFunctions"
-                  :modifier="currentModifier"
-                  @save="saveFunctionText"
-                >
-                  {{ key }}
-                </key>
-              </div>
-            </div>
-
-            <!-- 方向键 -->
-            <div class="right-keys">
-              <div class="right-row" v-for="directionRow in directionKeys">
-                <key
-                  v-for="key in directionRow"
-                  :keyName="key"
-                  :keyFunctions="currentKeyFunctions"
-                  :modifier="currentModifier"
-                  @save="saveFunctionText"
-                  >{{ key }}</key
-                >
-              </div>
-            </div>
-          </div>
-        </div>
+        <keyboard-right-panel
+          :systemKeys="systemKeys"
+          :navKeys="navKeys"
+          :directionKeys="directionKeys"
+          :currentKeyFunctions="currentKeyFunctions"
+          :currentModifier="currentModifier"
+          @save="saveFunctionText"
+        />
       </div>
 
       <div class="mouse-section">
@@ -120,13 +52,13 @@
 
 <script>
 import mouse from '@/components/mouse.vue'
-import themeToggle from '@/components/theme-toggle.vue'
 import key from '@/components/key.vue'
 import popover from '@/components/popover.vue'
 import keyboardLayout from '@/data/keyboard-layout.json'
-import dropdown from '@/components/dropdown.vue'
 import topNavigation from '@/components/top-navigation.vue'
-import profileEditor from '@/components/profile-editor.vue'
+import keyboardToolbar from '@/components/keyboard-toolbar.vue'
+import keyboardLeftPanel from '@/components/keyboard-left-panel.vue'
+import keyboardRightPanel from '@/components/keyboard-right-panel.vue'
 
 const DEFAULT_PROFILES = ['Daily', 'CS', 'Terraria', 'ARK']
 
@@ -209,12 +141,12 @@ export default {
   name: 'KeyboardView',
   components: {
     mouse,
-    themeToggle,
     key,
     popover,
-    dropdown,
     topNavigation,
-    profileEditor,
+    keyboardToolbar,
+    keyboardLeftPanel,
+    keyboardRightPanel,
   },
   data() {
     return {
@@ -314,42 +246,6 @@ export default {
   transition: background-color 0.3s ease;
 }
 
-.keyboard-container__profile-editor-toggle {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  z-index: 10;
-  height: 40px;
-  padding: 0 14px;
-  border-radius: 999px;
-  border: 1px solid #4a525b;
-  background: linear-gradient(to bottom, #313842, #20252b);
-  color: #edf1f5;
-  cursor: pointer;
-  transition:
-    transform 0.15s ease,
-    background 0.2s ease,
-    border-color 0.2s ease;
-}
-
-.keyboard-container__profile-editor-toggle:hover,
-.keyboard-container__profile-editor-toggle:focus-visible {
-  border-color: #66707c;
-  background: linear-gradient(to bottom, #3d4550, #262c33);
-  outline: none;
-}
-
-.keyboard-container__profile-editor-toggle:active {
-  transform: translateY(1px);
-}
-
-.keyboard-container__profile-editor {
-  position: absolute;
-  top: 72px;
-  left: 20px;
-  z-index: 9;
-}
-
 .home-view {
   min-height: 100vh;
   width: 100%;
@@ -366,55 +262,6 @@ export default {
   border-radius: 12px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   transition: background 0.3s ease;
-}
-
-.keyboard-row {
-  display: flex;
-  gap: 6px;
-  margin-bottom: 6px;
-}
-
-.keyboard-row:last-child {
-  margin-bottom: 0;
-}
-
-.key-dot {
-  position: absolute;
-  top: 85%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-/* 功能键区域 */
-.function-keys {
-  display: flex;
-  justify-content: space-between;
-}
-
-/* 右侧区域 */
-.keyboard-right {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.right-auxiliary {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  height: 100%;
-}
-
-.right-keys {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  align-items: center;
-}
-
-.right-row {
-  display: flex;
-  gap: 6px;
 }
 
 /* 鼠标 */
