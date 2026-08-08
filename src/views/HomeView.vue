@@ -1,7 +1,7 @@
 <template>
   <div class="keyboard-container" :class="{ 'light-mode': isLightMode }">
-    <dropdown @modifierChange="currentModifier = $event" />
     <theme-toggle :isLightMode="isLightMode" @update:isLightMode="isLightMode = $event" />
+    <dropdown :isLightMode="isLightMode" @modifierChange="currentModifier = $event" />
 
     <div class="keyboard">
       <div class="keyboard-left">
