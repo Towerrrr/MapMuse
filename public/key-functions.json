@@ -1,5 +1,23 @@
 {
   "activeProfile": "Daily",
+  "profileMeta": {
+    "Daily": {
+      "name": "日常",
+      "icon": "/Terraria_icon.jfif"
+    },
+    "CS": {
+      "name": "CS",
+      "icon": "/Terraria_icon.jfif"
+    },
+    "Terraria": {
+      "name": "泰拉",
+      "icon": "/Terraria_icon.jfif"
+    },
+    "ARK": {
+      "name": "ARK",
+      "icon": "/Terraria_icon.jfif"
+    }
+  },
   "profiles": {
     "Daily": {
       "F1": {

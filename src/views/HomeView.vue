@@ -3,10 +3,23 @@
     <top-navigation
       :isLightMode="isLightMode"
       :activeKey="currentProfile"
+      :items="profileItems"
       @select="selectProfile"
     />
 
     <div class="keyboard-container">
+      <button class="keyboard-container__profile-editor-toggle" type="button" @click="toggleProfileEditor">
+        {{ isProfileEditorOpen ? '关闭配置编辑' : '编辑当前配置' }}
+      </button>
+      <profile-editor
+        v-if="isProfileEditorOpen"
+        class="keyboard-container__profile-editor"
+        :isLightMode="isLightMode"
+        :profileKey="currentProfile"
+        :profileName="currentProfileMeta.name"
+        :profileIcon="currentProfileMeta.icon"
+        @update="updateCurrentProfileMeta"
+      />
       <theme-toggle :isLightMode="isLightMode" @update:isLightMode="isLightMode = $event" />
       <dropdown :isLightMode="isLightMode" @modifierChange="currentModifier = $event" />
 
@@ -113,8 +126,28 @@ import popover from '@/components/popover.vue'
 import keyboardLayout from '@/data/keyboard-layout.json'
 import dropdown from '@/components/dropdown.vue'
 import topNavigation from '@/components/top-navigation.vue'
+import profileEditor from '@/components/profile-editor.vue'
 
 const DEFAULT_PROFILES = ['Daily', 'CS', 'Terraria', 'ARK']
+
+const DEFAULT_PROFILE_META = {
+  Daily: {
+    name: '日常',
+    icon: '/Terraria_icon.jfif',
+  },
+  CS: {
+    name: 'CS',
+    icon: '/Terraria_icon.jfif',
+  },
+  Terraria: {
+    name: '泰拉',
+    icon: '/Terraria_icon.jfif',
+  },
+  ARK: {
+    name: 'ARK',
+    icon: '/Terraria_icon.jfif',
+  },
+}
 
 function createEmptyProfiles() {
   return DEFAULT_PROFILES.reduce((profiles, profileName) => {
@@ -123,10 +156,18 @@ function createEmptyProfiles() {
   }, {})
 }
 
+function createDefaultProfileMeta() {
+  return DEFAULT_PROFILES.reduce((profileMeta, profileName) => {
+    profileMeta[profileName] = { ...DEFAULT_PROFILE_META[profileName] }
+    return profileMeta
+  }, {})
+}
+
 function normalizeKeyFunctions(data) {
   if (!data || typeof data !== 'object' || Array.isArray(data)) {
     return {
       activeProfile: 'Daily',
+      profileMeta: createDefaultProfileMeta(),
       profiles: createEmptyProfiles(),
     }
   }
@@ -142,12 +183,19 @@ function normalizeKeyFunctions(data) {
         typeof data.activeProfile === 'string' && data.activeProfile in normalizedProfiles
           ? data.activeProfile
           : 'Daily',
+      profileMeta: {
+        ...createDefaultProfileMeta(),
+        ...(data.profileMeta && typeof data.profileMeta === 'object' && !Array.isArray(data.profileMeta)
+          ? data.profileMeta
+          : {}),
+      },
       profiles: normalizedProfiles,
     }
   }
 
   return {
     activeProfile: 'Daily',
+    profileMeta: createDefaultProfileMeta(),
     profiles: {
       Daily: data,
       CS: {},
@@ -166,14 +214,17 @@ export default {
     popover,
     dropdown,
     topNavigation,
+    profileEditor,
   },
   data() {
     return {
       isLightMode: false,
+      isProfileEditorOpen: false,
       editingKey: null,
       ...keyboardLayout,
       keyFunctions: {
         activeProfile: 'Daily',
+        profileMeta: createDefaultProfileMeta(),
         profiles: createEmptyProfiles(),
       },
       currentModifier: '',
@@ -183,12 +234,25 @@ export default {
     currentProfile() {
       return this.keyFunctions.activeProfile
     },
+    currentProfileMeta() {
+      return this.keyFunctions.profileMeta?.[this.currentProfile] || { name: this.currentProfile, icon: '' }
+    },
+    profileItems() {
+      return DEFAULT_PROFILES.map((profileKey) => {
+        const meta = this.keyFunctions.profileMeta?.[profileKey] || DEFAULT_PROFILE_META[profileKey]
+        return {
+          key: profileKey,
+          label: meta?.name || profileKey,
+          icon: meta?.icon || '/Terraria_icon.jfif',
+        }
+      })
+    },
     currentKeyFunctions() {
       return this.keyFunctions.profiles[this.currentProfile] || {}
     },
   },
-  mounted() {
-    this.keyFunctions = normalizeKeyFunctions(window.electronAPI.loadKeyFunctions())
+  async mounted() {
+    this.keyFunctions = normalizeKeyFunctions(await window.electronAPI.loadKeyFunctions())
   },
   methods: {
     selectProfile(profileName) {
@@ -196,6 +260,23 @@ export default {
         this.keyFunctions.activeProfile = profileName
         window.electronAPI.saveKeyFunctions(JSON.parse(JSON.stringify(this.keyFunctions)))
       }
+    },
+    toggleProfileEditor() {
+      this.isProfileEditorOpen = !this.isProfileEditorOpen
+    },
+    updateCurrentProfileMeta({ name, icon }) {
+      if (!this.keyFunctions.profileMeta[this.currentProfile]) {
+        this.keyFunctions.profileMeta[this.currentProfile] = { ...DEFAULT_PROFILE_META[this.currentProfile] }
+      }
+
+      this.keyFunctions.profileMeta[this.currentProfile] = {
+        ...this.keyFunctions.profileMeta[this.currentProfile],
+        name,
+        icon,
+      }
+
+      window.electronAPI.saveKeyFunctions(JSON.parse(JSON.stringify(this.keyFunctions)))
+      this.isProfileEditorOpen = false
     },
     saveFunctionText({ keyName, field, text }) {
       const profileFunctions = this.currentKeyFunctions
@@ -231,6 +312,42 @@ export default {
   gap: 40px;
   position: relative;
   transition: background-color 0.3s ease;
+}
+
+.keyboard-container__profile-editor-toggle {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 10;
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid #4a525b;
+  background: linear-gradient(to bottom, #313842, #20252b);
+  color: #edf1f5;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.keyboard-container__profile-editor-toggle:hover,
+.keyboard-container__profile-editor-toggle:focus-visible {
+  border-color: #66707c;
+  background: linear-gradient(to bottom, #3d4550, #262c33);
+  outline: none;
+}
+
+.keyboard-container__profile-editor-toggle:active {
+  transform: translateY(1px);
+}
+
+.keyboard-container__profile-editor {
+  position: absolute;
+  top: 72px;
+  left: 20px;
+  z-index: 9;
 }
 
 .home-view {

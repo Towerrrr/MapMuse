@@ -2,7 +2,7 @@
   <nav class="top-navigation" :class="{ 'top-navigation--light': isLightMode }" aria-label="顶部导航菜单">
     <div class="top-navigation__rail">
       <button
-        v-for="item in menuItems"
+        v-for="item in items"
         :key="item.key"
         type="button"
         class="top-navigation__item"
@@ -10,7 +10,7 @@
         :aria-pressed="item.key === activeKey"
         @click="emit('select', item.key)"
       >
-        <img class="top-navigation__icon" src="/Terraria_icon.jfif" alt="" aria-hidden="true" />
+        <img class="top-navigation__icon" :src="item.icon || defaultIcon" :alt="item.label" aria-hidden="true" />
         <span class="top-navigation__label">{{ item.label }}</span>
       </button>
     </div>
@@ -18,6 +18,8 @@
 </template>
 
 <script setup>
+const defaultIcon = '/Terraria_icon.jfif'
+
 defineProps({
   isLightMode: {
     type: Boolean,
@@ -27,16 +29,13 @@ defineProps({
     type: String,
     default: '',
   },
+  items: {
+    type: Array,
+    default: () => [],
+  },
 })
 
 const emit = defineEmits(['select'])
-
-const menuItems = [
-  { key: 'Daily', label: '日常' },
-  { key: 'CS', label: 'CS' },
-  { key: 'Terraria', label: '泰拉' },
-  { key: 'ARK', label: 'ARK' },
-]
 </script>
 
 <style scoped>
