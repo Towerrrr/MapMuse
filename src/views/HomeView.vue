@@ -1,67 +1,24 @@
 <template>
-  <div class="keyboard-container" :class="{ 'light-mode': isLightMode }">
-    <theme-toggle :isLightMode="isLightMode" @update:isLightMode="isLightMode = $event" />
-    <dropdown :isLightMode="isLightMode" @modifierChange="currentModifier = $event" />
+  <div class="home-view" :class="{ 'light-mode': isLightMode }">
+    <top-navigation
+      :isLightMode="isLightMode"
+      :activeKey="currentProfile"
+      @select="selectProfile"
+    />
 
-    <div class="keyboard">
-      <div class="keyboard-left">
-        <!-- 功能键区域 -->
-        <div class="keyboard-row function-keys">
-          <div class="keyboard-row" v-for="functionRow in functionKeys">
-            <key
-              v-for="key in functionRow"
-              :keyName="key"
-              :keyFunctions="keyFunctions"
-              :modifier="currentModifier"
-              @save="saveFunctionText"
-            >
-              {{ key }}
-            </key>
-          </div>
-        </div>
+    <div class="keyboard-container">
+      <theme-toggle :isLightMode="isLightMode" @update:isLightMode="isLightMode = $event" />
+      <dropdown :isLightMode="isLightMode" @modifierChange="currentModifier = $event" />
 
-        <!-- 主键区 -->
-        <div class="keyboard-row" v-for="row in rows">
-          <key
-            v-for="key in row"
-            :keyName="key.main"
-            :keyFunctions="keyFunctions"
-            :style="key.flex ? { flex: key.flex } : null"
-            :modifier="currentModifier"
-            @save="saveFunctionText"
-          >
-            <div>
-              {{ key.main }}
-              <span v-if="key.symbol"> {{ key.symbol }}</span>
-            </div>
-
-            <span v-if="key.dot" class="key-dot">•</span>
-          </key>
-        </div>
-      </div>
-
-      <!-- 键盘右侧区域 -->
-      <div class="keyboard-right">
-        <div class="right-row">
-          <key
-            v-for="key in systemKeys"
-            :keyName="key"
-            :keyFunctions="keyFunctions"
-            :modifier="currentModifier"
-            @save="saveFunctionText"
-          >
-            {{ key }}
-          </key>
-        </div>
-        <!-- 辅助定位 -->
-        <div class="right-auxiliary">
-          <!-- 导航键区域 -->
-          <div class="right-keys">
-            <div class="right-row" v-for="navRow in navKeys">
+      <div class="keyboard">
+        <div class="keyboard-left">
+          <!-- 功能键区域 -->
+          <div class="keyboard-row function-keys">
+            <div class="keyboard-row" v-for="functionRow in functionKeys">
               <key
-                v-for="key in navRow"
+                v-for="key in functionRow"
                 :keyName="key"
-                :keyFunctions="keyFunctions"
+                :keyFunctions="currentKeyFunctions"
                 :modifier="currentModifier"
                 @save="saveFunctionText"
               >
@@ -70,29 +27,80 @@
             </div>
           </div>
 
-          <!-- 方向键 -->
-          <div class="right-keys">
-            <div class="right-row" v-for="directionRow in directionKeys">
-              <key
-                v-for="key in directionRow"
-                :keyName="key"
-                :keyFunctions="keyFunctions"
-                :modifier="currentModifier"
-                @save="saveFunctionText"
-                >{{ key }}</key
-              >
+          <!-- 主键区 -->
+          <div class="keyboard-row" v-for="row in rows">
+            <key
+              v-for="key in row"
+              :keyName="key.main"
+              :keyFunctions="currentKeyFunctions"
+              :style="key.flex ? { flex: key.flex } : null"
+              :modifier="currentModifier"
+              @save="saveFunctionText"
+            >
+              <div>
+                {{ key.main }}
+                <span v-if="key.symbol"> {{ key.symbol }}</span>
+              </div>
+
+              <span v-if="key.dot" class="key-dot">•</span>
+            </key>
+          </div>
+        </div>
+
+        <!-- 键盘右侧区域 -->
+        <div class="keyboard-right">
+          <div class="right-row">
+            <key
+              v-for="key in systemKeys"
+              :keyName="key"
+              :keyFunctions="currentKeyFunctions"
+              :modifier="currentModifier"
+              @save="saveFunctionText"
+            >
+              {{ key }}
+            </key>
+          </div>
+          <!-- 辅助定位 -->
+          <div class="right-auxiliary">
+            <!-- 导航键区域 -->
+            <div class="right-keys">
+              <div class="right-row" v-for="navRow in navKeys">
+                <key
+                  v-for="key in navRow"
+                  :keyName="key"
+                  :keyFunctions="currentKeyFunctions"
+                  :modifier="currentModifier"
+                  @save="saveFunctionText"
+                >
+                  {{ key }}
+                </key>
+              </div>
+            </div>
+
+            <!-- 方向键 -->
+            <div class="right-keys">
+              <div class="right-row" v-for="directionRow in directionKeys">
+                <key
+                  v-for="key in directionRow"
+                  :keyName="key"
+                  :keyFunctions="currentKeyFunctions"
+                  :modifier="currentModifier"
+                  @save="saveFunctionText"
+                  >{{ key }}</key
+                >
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="mouse-section">
-      <div class="side-buttons">
-        <key></key>
-        <key></key>
+      <div class="mouse-section">
+        <div class="side-buttons">
+          <key></key>
+          <key></key>
+        </div>
+        <mouse />
       </div>
-      <mouse />
     </div>
   </div>
 </template>
@@ -104,6 +112,50 @@ import key from '@/components/key.vue'
 import popover from '@/components/popover.vue'
 import keyboardLayout from '@/data/keyboard-layout.json'
 import dropdown from '@/components/dropdown.vue'
+import topNavigation from '@/components/top-navigation.vue'
+
+const DEFAULT_PROFILES = ['Daily', 'CS', 'Terraria', 'ARK']
+
+function createEmptyProfiles() {
+  return DEFAULT_PROFILES.reduce((profiles, profileName) => {
+    profiles[profileName] = {}
+    return profiles
+  }, {})
+}
+
+function normalizeKeyFunctions(data) {
+  if (!data || typeof data !== 'object' || Array.isArray(data)) {
+    return {
+      activeProfile: 'Daily',
+      profiles: createEmptyProfiles(),
+    }
+  }
+
+  if ('profiles' in data) {
+    const normalizedProfiles = {
+      ...createEmptyProfiles(),
+      ...(data.profiles && typeof data.profiles === 'object' && !Array.isArray(data.profiles) ? data.profiles : {}),
+    }
+
+    return {
+      activeProfile:
+        typeof data.activeProfile === 'string' && data.activeProfile in normalizedProfiles
+          ? data.activeProfile
+          : 'Daily',
+      profiles: normalizedProfiles,
+    }
+  }
+
+  return {
+    activeProfile: 'Daily',
+    profiles: {
+      Daily: data,
+      CS: {},
+      Terraria: {},
+      ARK: {},
+    },
+  }
+}
 
 export default {
   name: 'KeyboardView',
@@ -113,32 +165,51 @@ export default {
     key,
     popover,
     dropdown,
+    topNavigation,
   },
   data() {
     return {
       isLightMode: false,
       editingKey: null,
       ...keyboardLayout,
-      keyFunctions: {},
+      keyFunctions: {
+        activeProfile: 'Daily',
+        profiles: createEmptyProfiles(),
+      },
       currentModifier: '',
     }
   },
+  computed: {
+    currentProfile() {
+      return this.keyFunctions.activeProfile
+    },
+    currentKeyFunctions() {
+      return this.keyFunctions.profiles[this.currentProfile] || {}
+    },
+  },
   mounted() {
-    this.keyFunctions = window.electronAPI.loadKeyFunctions()
+    this.keyFunctions = normalizeKeyFunctions(window.electronAPI.loadKeyFunctions())
   },
   methods: {
-    saveFunctionText({ keyName, field, text }) {
-      if (!this.keyFunctions[keyName]) {
-        this.keyFunctions[keyName] = {}
+    selectProfile(profileName) {
+      if (this.keyFunctions.profiles[profileName]) {
+        this.keyFunctions.activeProfile = profileName
+        window.electronAPI.saveKeyFunctions(JSON.parse(JSON.stringify(this.keyFunctions)))
       }
+    },
+    saveFunctionText({ keyName, field, text }) {
+      const profileFunctions = this.currentKeyFunctions
+
       if (text.trim() !== '') {
-        this.keyFunctions[keyName][field] = text
-      } else {
-        delete this.keyFunctions[keyName][field]
-        if (Object.keys(this.keyFunctions[keyName]).length === 0) {
-          delete this.keyFunctions[keyName]
+        profileFunctions[keyName] = profileFunctions[keyName] || {}
+        profileFunctions[keyName][field] = text
+      } else if (profileFunctions[keyName]) {
+        delete profileFunctions[keyName][field]
+        if (Object.keys(profileFunctions[keyName]).length === 0) {
+          delete profileFunctions[keyName]
         }
       }
+
       window.electronAPI.saveKeyFunctions(JSON.parse(JSON.stringify(this.keyFunctions)))
     },
   },
@@ -150,6 +221,7 @@ export default {
 
 .keyboard-container {
   width: 100%;
+  flex: 1;
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -159,6 +231,14 @@ export default {
   gap: 40px;
   position: relative;
   transition: background-color 0.3s ease;
+}
+
+.home-view {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
 .keyboard {
