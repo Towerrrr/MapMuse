@@ -1,10 +1,17 @@
 <template>
   <div class="home-view" :class="{ 'light-mode': isLightMode }">
     <top-navigation
-      :isLightMode="isLightMode"
       :activeKey="currentProfile"
       :items="profileItems"
       @select="selectProfile"
+      @create="openCreateProfileDialog"
+    />
+
+    <profile-create-dialog
+      v-if="isCreateProfileDialogOpen"
+      :existingKeys="profileKeys"
+      @close="closeCreateProfileDialog"
+      @create="createProfile"
     />
 
     <div class="keyboard-container">
@@ -56,80 +63,128 @@ import key from '@/components/key.vue'
 import popover from '@/components/popover.vue'
 import keyboardLayout from '@/data/keyboard-layout.json'
 import topNavigation from '@/components/top-navigation.vue'
+import profileCreateDialog from '@/components/profile-create-dialog.vue'
 import keyboardToolbar from '@/components/keyboard-toolbar.vue'
 import keyboardLeftPanel from '@/components/keyboard-left-panel.vue'
 import keyboardRightPanel from '@/components/keyboard-right-panel.vue'
 
-const DEFAULT_PROFILES = ['Daily', 'CS', 'Terraria', 'ARK']
+const DEFAULT_PROFILE_ORDER = ['Daily', 'CS', 'Terraria', 'ARK']
+const DEFAULT_PROFILE_ICON = '/Terraria_icon.jfif'
 
 const DEFAULT_PROFILE_META = {
   Daily: {
     name: '日常',
-    icon: '/Terraria_icon.jfif',
+    icon: DEFAULT_PROFILE_ICON,
   },
   CS: {
     name: 'CS',
-    icon: '/Terraria_icon.jfif',
+    icon: DEFAULT_PROFILE_ICON,
   },
   Terraria: {
     name: '泰拉',
-    icon: '/Terraria_icon.jfif',
+    icon: DEFAULT_PROFILE_ICON,
   },
   ARK: {
     name: 'ARK',
-    icon: '/Terraria_icon.jfif',
+    icon: DEFAULT_PROFILE_ICON,
   },
 }
 
-function createEmptyProfiles() {
-  return DEFAULT_PROFILES.reduce((profiles, profileName) => {
+function createDefaultProfiles() {
+  return DEFAULT_PROFILE_ORDER.reduce((profiles, profileName) => {
     profiles[profileName] = {}
     return profiles
   }, {})
 }
 
 function createDefaultProfileMeta() {
-  return DEFAULT_PROFILES.reduce((profileMeta, profileName) => {
+  return DEFAULT_PROFILE_ORDER.reduce((profileMeta, profileName) => {
     profileMeta[profileName] = { ...DEFAULT_PROFILE_META[profileName] }
     return profileMeta
   }, {})
 }
 
+function createDefaultProfileEntry(profileKey) {
+  return {
+    name: profileKey,
+    icon: DEFAULT_PROFILE_ICON,
+  }
+}
+
+function isPlainObject(value) {
+  return value && typeof value === 'object' && !Array.isArray(value)
+}
+
+function normalizeProfileOrder(profiles = {}, profileMeta = {}) {
+  const orderedKeys = [...DEFAULT_PROFILE_ORDER]
+  const knownKeys = new Set(orderedKeys)
+
+  for (const profileKey of Object.keys(profiles)) {
+    if (!knownKeys.has(profileKey)) {
+      knownKeys.add(profileKey)
+      orderedKeys.push(profileKey)
+    }
+  }
+
+  for (const profileKey of Object.keys(profileMeta)) {
+    if (!knownKeys.has(profileKey)) {
+      knownKeys.add(profileKey)
+      orderedKeys.push(profileKey)
+    }
+  }
+
+  return orderedKeys
+}
+
 function normalizeKeyFunctions(data) {
   if (!data || typeof data !== 'object' || Array.isArray(data)) {
     return {
-      activeProfile: 'Daily',
+      activeProfile: DEFAULT_PROFILE_ORDER[0],
       profileMeta: createDefaultProfileMeta(),
-      profiles: createEmptyProfiles(),
+      profiles: createDefaultProfiles(),
     }
   }
 
   if ('profiles' in data) {
-    const normalizedProfiles = {
-      ...createEmptyProfiles(),
-      ...(data.profiles && typeof data.profiles === 'object' && !Array.isArray(data.profiles) ? data.profiles : {}),
+    const incomingProfiles = isPlainObject(data.profiles) ? data.profiles : {}
+    const incomingProfileMeta = isPlainObject(data.profileMeta) ? data.profileMeta : {}
+    const normalizedProfiles = {}
+    const normalizedProfileMeta = {}
+
+    for (const profileKey of normalizeProfileOrder(incomingProfiles, incomingProfileMeta)) {
+      normalizedProfiles[profileKey] = isPlainObject(incomingProfiles[profileKey]) ? { ...incomingProfiles[profileKey] } : {}
+
+      const baseMeta = DEFAULT_PROFILE_META[profileKey] || createDefaultProfileEntry(profileKey)
+      const profileMeta = isPlainObject(incomingProfileMeta[profileKey]) ? incomingProfileMeta[profileKey] : {}
+
+      normalizedProfileMeta[profileKey] = {
+        ...baseMeta,
+        ...profileMeta,
+        name: typeof profileMeta.name === 'string' && profileMeta.name.trim() ? profileMeta.name.trim() : baseMeta.name,
+        icon:
+          typeof profileMeta.icon === 'string' && profileMeta.icon.trim() ? profileMeta.icon.trim() : baseMeta.icon,
+      }
     }
 
+    const activeProfile =
+      typeof data.activeProfile === 'string' && data.activeProfile in normalizedProfiles
+        ? data.activeProfile
+        : normalizeProfileOrder(incomingProfiles, incomingProfileMeta)[0] || DEFAULT_PROFILE_ORDER[0]
+
     return {
-      activeProfile:
-        typeof data.activeProfile === 'string' && data.activeProfile in normalizedProfiles
-          ? data.activeProfile
-          : 'Daily',
-      profileMeta: {
-        ...createDefaultProfileMeta(),
-        ...(data.profileMeta && typeof data.profileMeta === 'object' && !Array.isArray(data.profileMeta)
-          ? data.profileMeta
-          : {}),
-      },
+      activeProfile,
+      profileMeta: normalizedProfileMeta,
       profiles: normalizedProfiles,
     }
   }
 
+  const legacyProfiles = isPlainObject(data) ? data : {}
+
   return {
-    activeProfile: 'Daily',
+    activeProfile: DEFAULT_PROFILE_ORDER[0],
     profileMeta: createDefaultProfileMeta(),
     profiles: {
-      Daily: data,
+      Daily: legacyProfiles,
       CS: {},
       Terraria: {},
       ARK: {},
@@ -144,6 +199,7 @@ export default {
     key,
     popover,
     topNavigation,
+    profileCreateDialog,
     keyboardToolbar,
     keyboardLeftPanel,
     keyboardRightPanel,
@@ -152,12 +208,13 @@ export default {
     return {
       isLightMode: false,
       isProfileEditorOpen: false,
+      isCreateProfileDialogOpen: false,
       editingKey: null,
       ...keyboardLayout,
       keyFunctions: {
-        activeProfile: 'Daily',
+        activeProfile: DEFAULT_PROFILE_ORDER[0],
         profileMeta: createDefaultProfileMeta(),
-        profiles: createEmptyProfiles(),
+        profiles: createDefaultProfiles(),
       },
       currentModifier: '',
     }
@@ -167,15 +224,18 @@ export default {
       return this.keyFunctions.activeProfile
     },
     currentProfileMeta() {
-      return this.keyFunctions.profileMeta?.[this.currentProfile] || { name: this.currentProfile, icon: '' }
+      return this.keyFunctions.profileMeta?.[this.currentProfile] || createDefaultProfileEntry(this.currentProfile)
+    },
+    profileKeys() {
+      return Object.keys(this.keyFunctions.profiles || {})
     },
     profileItems() {
-      return DEFAULT_PROFILES.map((profileKey) => {
-        const meta = this.keyFunctions.profileMeta?.[profileKey] || DEFAULT_PROFILE_META[profileKey]
+      return this.profileKeys.map((profileKey) => {
+        const meta = this.keyFunctions.profileMeta?.[profileKey] || createDefaultProfileEntry(profileKey)
         return {
           key: profileKey,
           label: meta?.name || profileKey,
-          icon: meta?.icon || '/Terraria_icon.jfif',
+          icon: meta?.icon || DEFAULT_PROFILE_ICON,
         }
       })
     },
@@ -192,6 +252,32 @@ export default {
         this.keyFunctions.activeProfile = profileName
         window.electronAPI.saveKeyFunctions(JSON.parse(JSON.stringify(this.keyFunctions)))
       }
+    },
+    openCreateProfileDialog() {
+      this.isCreateProfileDialogOpen = true
+    },
+    closeCreateProfileDialog() {
+      this.isCreateProfileDialogOpen = false
+    },
+    createProfile({ key, name, icon }) {
+      const profileKey = typeof key === 'string' ? key.trim() : ''
+
+      if (!profileKey || this.keyFunctions.profiles[profileKey]) {
+        return
+      }
+
+      const profileName = typeof name === 'string' && name.trim() ? name.trim() : profileKey
+      const profileIcon = typeof icon === 'string' && icon.trim() ? icon.trim() : DEFAULT_PROFILE_ICON
+
+      this.keyFunctions.profiles[profileKey] = {}
+      this.keyFunctions.profileMeta[profileKey] = {
+        name: profileName,
+        icon: profileIcon,
+      }
+      this.keyFunctions.activeProfile = profileKey
+
+      window.electronAPI.saveKeyFunctions(JSON.parse(JSON.stringify(this.keyFunctions)))
+      this.isCreateProfileDialogOpen = false
     },
     toggleProfileEditor() {
       this.isProfileEditorOpen = !this.isProfileEditorOpen

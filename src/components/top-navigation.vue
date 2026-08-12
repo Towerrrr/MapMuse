@@ -1,5 +1,5 @@
 <template>
-  <nav class="top-navigation" :class="{ 'top-navigation--light': isLightMode }" aria-label="顶部导航菜单">
+  <nav class="top-navigation" aria-label="顶部导航菜单">
     <div class="top-navigation__rail">
       <button
         v-for="item in items"
@@ -13,6 +13,16 @@
         <img class="top-navigation__icon" :src="item.icon || defaultIcon" :alt="item.label" aria-hidden="true" />
         <span class="top-navigation__label">{{ item.label }}</span>
       </button>
+
+      <button
+        type="button"
+        class="top-navigation__add"
+        aria-label="新增菜单项"
+        title="新增菜单项"
+        @click="emit('create')"
+      >
+        <span class="top-navigation__add-icon" aria-hidden="true">+</span>
+      </button>
     </div>
   </nav>
 </template>
@@ -21,10 +31,6 @@
 const defaultIcon = '/Terraria_icon.jfif'
 
 defineProps({
-  isLightMode: {
-    type: Boolean,
-    default: false,
-  },
   activeKey: {
     type: String,
     default: '',
@@ -35,7 +41,7 @@ defineProps({
   },
 })
 
-const emit = defineEmits(['select'])
+const emit = defineEmits(['select', 'create'])
 </script>
 
 <style scoped>
@@ -121,30 +127,43 @@ const emit = defineEmits(['select'])
   filter: saturate(1.05) contrast(1.05);
 }
 
-.top-navigation--light .top-navigation__rail {
-  border-color: #c9d0d8;
-  background: linear-gradient(to bottom, #fdfdfd, #e9edf2);
+.top-navigation__add {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border: 1px solid #262b31;
+  background: linear-gradient(to bottom, #1f2429, #14181d);
+  color: #eef2f6;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    background 0.25s ease,
+    color 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.top-navigation__add:hover,
+.top-navigation__add:focus-visible {
+  color: #ffffff;
+  border-color: #66707c;
+  background: linear-gradient(to bottom, #313842, #20252c);
   box-shadow:
-    0 10px 24px rgba(0, 0, 0, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.88);
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 0 0 1px rgba(255, 255, 255, 0.03);
+  outline: none;
 }
 
-.top-navigation--light .top-navigation__item {
-  color: #2b3138;
-  border-color: #d2d8df;
-  background: linear-gradient(to bottom, #ffffff, #e7ebf0);
+.top-navigation__add:active {
+  transform: translateY(1px);
 }
 
-.top-navigation--light .top-navigation__item:hover,
-.top-navigation--light .top-navigation__item:focus-visible {
-  color: #101418;
-  border-color: #b8c0c9;
-  background: linear-gradient(to bottom, #f7f9fb, #dde3ea);
-}
-
-.top-navigation--light .top-navigation__item--active {
-  color: #101418;
-  border-color: #aeb7c1;
-  background: linear-gradient(to bottom, #eef2f6, #d9e0e8);
+.top-navigation__add-icon {
+  font-size: 24px;
+  line-height: 1;
+  font-weight: 300;
 }
 </style>
