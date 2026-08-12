@@ -24,7 +24,6 @@ export default {
 
 <style scoped>
 .theme-toggle {
-  position: absolute;
   top: 20px;
   right: 20px;
   width: 50px;

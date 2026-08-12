@@ -67,7 +67,6 @@ const handleMenuClick = (e) => {
 }
 
 .demo-dropdown-wrap {
-  position: absolute;
   top: 20px;
   right: 100px;
 }
@@ -105,22 +104,6 @@ const handleMenuClick = (e) => {
 
 .demo-dropdown-wrap :deep(.ant-btn .anticon) {
   font-size: 12px;
-}
-
-.light-mode .demo-dropdown-wrap :deep(.ant-btn) {
-  color: #1f1f1f;
-  border-color: #d0d0d0;
-  background: linear-gradient(to bottom, #ffffff, #f0f0f0);
-  box-shadow:
-    0 4px 10px rgba(0, 0, 0, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
-}
-
-.light-mode .demo-dropdown-wrap :deep(.ant-btn:hover),
-.light-mode .demo-dropdown-wrap :deep(.ant-btn:focus-visible) {
-  color: #111111;
-  border-color: #c4c4c4;
-  background: linear-gradient(to bottom, #f8f8f8, #e8e8e8);
 }
 
 :global(.modifier-dropdown-overlay .ant-dropdown-menu) {

@@ -14,10 +14,8 @@
       @update="emit('update-profile-meta', $event)"
     />
 
-    <div class="keyboard-toolbar__controls">
-      <theme-toggle :isLightMode="isLightMode" @update:isLightMode="emit('update:isLightMode', $event)" />
-      <dropdown :isLightMode="isLightMode" @modifierChange="emit('modifier-change', $event)" />
-    </div>
+    <theme-toggle :isLightMode="isLightMode" @update:isLightMode="emit('update:isLightMode', $event)" />
+    <dropdown :isLightMode="isLightMode" @modifierChange="emit('modifier-change', $event)" />
   </div>
 </template>
 
@@ -95,9 +93,4 @@ const emit = defineEmits(['toggle-profile-editor', 'update-profile-meta', 'updat
   z-index: 9;
 }
 
-.keyboard-toolbar__controls {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
 </style>
